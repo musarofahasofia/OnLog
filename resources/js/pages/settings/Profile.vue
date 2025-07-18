@@ -28,16 +28,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
 
-const form = useForm({
+const form = useForm<{
+    name: string;
+    email: string;
+    photo: File | null;
+}>({
     name: user.name,
     email: user.email,
+    photo: null,
 });
 
 const submit = () => {
-    form.patch(route('profile.update'), {
+    form.post(route('profile.update'), {
         preserveScroll: true,
+        forceFormData: true,
     });
 };
+
 </script>
 
 <template>
@@ -49,6 +56,21 @@ const submit = () => {
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
 
                 <form @submit.prevent="submit" class="space-y-6">
+                    <div class="grid gap-2">
+                        <Label for="photo">Foto Profil</Label>
+                        <Input
+                        id="photo"
+                        type="file"
+                        @change="(e: Event) => {
+                            const target = e.target as HTMLInputElement;
+                            if (target.files && target.files[0]) {
+                            form.photo = target.files[0];
+                            }
+                        }"
+                        />
+                        <InputError class="mt-2" :message="form.errors.photo" />
+                    </div>
+
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Full name" />

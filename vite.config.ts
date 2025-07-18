@@ -28,4 +28,12 @@ export default defineConfig({
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
+    server: {
+        host: '0.0.0.0', // penting: ini yang bikin bisa diakses dari IP lokal
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: '172.27.60.102', // ← Ganti dengan IP kamu (hasil dari `hostname -I`)
+        },
+    },
 });
