@@ -13,8 +13,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex items-center justify-center min-h-screen p-6">
-      <div class="w-full max-w-6xl">
+    <div class="flex justify-start min-h-screen p-6">
+      <div class="w-full p-4">
         <h1 class="text-3xl font-bold mb-8 text-center">Informasi</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

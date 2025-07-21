@@ -33,7 +33,7 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         hmr: {
-            host: '172.27.60.102', // ← Ganti dengan IP kamu (hasil dari `hostname -I`)
+            host: '172.29.225.46', // ← Ganti dengan IP kamu (hasil dari `hostname -I`)
         },
     },
 });

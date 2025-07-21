@@ -4,18 +4,20 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\user\DashboardController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\user\InformationController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome');
 // })->name('home');
 
-Route::get('/', [AuthenticatedSessionController::class, 'create'])
-    ->name('home');
+Route::get('/', function () {
+    return Redirect::route('profile');
+})->middleware(['auth', 'verified'])->name('home');
 
 // Route::get('dashboard', function () {
 //     return Inertia::render('Dashboard');
@@ -51,6 +53,6 @@ Route::post('/absen-pulang', [AttendanceController::class, 'absenPulang'])
 Route::post('/absen', [AttendanceController::class, 'store'])->name('absen.store');
 
 Route::get('profile', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('profile');
-Route::get('informasi', [InformationController::class, 'index'])->middleware(['auth', 'verified'])->name('profile');
+Route::get('informasi', [InformationController::class, 'index'])->middleware(['auth', 'verified'])->name('information');
 
 Route::post('/settings/profile', [ProfilePhotoController::class, 'update'])->name('profile.update');
