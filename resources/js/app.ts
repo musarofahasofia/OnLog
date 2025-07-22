@@ -6,6 +6,15 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
+import route from 'ziggy-js';
+
+declare global {
+    interface Window {
+        route: typeof route;
+    }
+}
+
+window.route = route;
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
