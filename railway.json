@@ -1,6 +1,6 @@
 {
   "build": {
-    "buildCommand": "composer install --no-dev && php artisan config:clear && php artisan route:clear && php artisan view:clear && npm install && npm run build && test -f && cp public/build/.vite/manifest.json public/build/manifest.json"
+    "buildCommand": "composer install --no-dev && php artisan config:clear && php artisan route:clear && php artisan view:clear && npm install && npm run build "
   },
   "start": {
     "cmd": "bash -c 'php artisan serve --host=0.0.0.0 --port=${PORT}'"
