@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: laravel-app
+    name: on-log
     env: php
     plan: free
     buildCommand: |
