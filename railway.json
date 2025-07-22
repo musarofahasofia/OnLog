@@ -1,11 +1,8 @@
 {
   "build": {
-    "env": {
-      "NODE_ENV": "production"
-    },
-    "buildCommand": "composer install --no-dev && npm install && npm run build"
+    "buildCommand": "composer install --no-dev && php artisan config:clear && php artisan route:clear && php artisan view:clear && npm install && npm run build"
   },
   "start": {
-    "cmd": "php artisan serve --host 0.0.0.0 --port $PORT"
+    "cmd": "bash -c 'php artisan serve --host=0.0.0.0 --port=${PORT}'"
   }
 }
