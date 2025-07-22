@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppLayout from '../layouts/AppLayout.vue';
+import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { ref, computed, onMounted } from 'vue'
 import { usePage, Link, router } from '@inertiajs/vue3';
 import type { SharedData, User } from '@/types'; // misalnya kamu simpan di file terpisah
@@ -78,11 +78,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     title: 'Profile',
     href: '/Profile',
   },
+  
 ];
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbs">
+  <AdminAppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6 space-y-6 text-gray-800">
 
       <!-- User Info with Solid Background -->
@@ -209,5 +210,5 @@ const breadcrumbs: BreadcrumbItem[] = [
       </div>
     </div>
 
-  </AppLayout>
+  </AdminAppLayout>
 </template>
