@@ -36,4 +36,11 @@ export default defineConfig({
             host: '172.29.225.46', // ← Ganti dengan IP kamu (hasil dari `hostname -I`)
         },
     },
+    build: {
+        manifest: true,
+        outDir: 'public/build',
+        rollupOptions: {
+            input: 'resources/js/app.ts',
+        },
+    },
 });
