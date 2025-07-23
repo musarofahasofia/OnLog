@@ -1,6 +1,6 @@
 {
   "build": {
-    "buildCommand": "composer install --no-dev && php artisan config:clear && php artisan route:clear && php artisan view:clear && npm install && npm run build "
+    "buildCommand": "composer install --no-dev && php artisan config:clear && php artisan route:clear && php artisan view:clear && npm install && npm run build:ssr "
   },
   "start": {
     "cmd": "php -S 0.0.0.0:${PORT} -t public"
