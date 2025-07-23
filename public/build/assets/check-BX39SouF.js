@@ -1,4 +1,4 @@
-import{c}from"./AppLogoIcon.vue_vue_type_script_setup_true_lang-DTs8pa6D.js";/**
+import{c}from"./AppLogoIcon.vue_vue_type_script_setup_true_lang-6cejSZ-z.js";/**
  * @license lucide-vue-next v0.468.0 - ISC
  *
  * This source code is licensed under the ISC license.

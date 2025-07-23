@@ -20,14 +20,17 @@ const form = useForm({
     remember: false,
 });
 
+console.log('Login route URL:', route('login'));
+console.log('Current location:', window.location.href);
+
 const submit = () => {
     // Debug route generation
     console.log('Login route URL:', route('login'));
     console.log('Current location:', window.location.href);
 
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+    // form.post(route('login'), {
+    //     onFinish: () => form.reset('password'),
+    // });
 };
 </script>
 

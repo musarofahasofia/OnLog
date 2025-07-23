@@ -60,7 +60,7 @@ onMounted(() => {
 // const userIp = page.props.userIp
 
 const isOnOfficeNetwork = computed(() => (clientIp.startsWith('100.64.') ||
-  clientIp.startsWith('10.') ||
+  clientIp.startsWith('100.') ||
   clientIp === 'kantor-static-ip'))
 
 const absen = (type: 'masuk' | 'pulang') => {
