@@ -59,7 +59,7 @@ onMounted(() => {
 
 // const userIp = page.props.userIp
 
-const isOnOfficeNetwork = computed(() => (clientIp.startsWith('172.29.') ||
+const isOnOfficeNetwork = computed(() => (clientIp.startsWith('100.64.') ||
   clientIp.startsWith('10.') ||
   clientIp === 'kantor-static-ip'))
 

@@ -6,8 +6,11 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
+import axios from 'axios';
 
-// Extend ImportMeta interface for Vite...
+axios.defaults.baseURL = window.location.origin;
+
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 declare module 'vite/client' {
     interface ImportMetaEnv {
         readonly VITE_APP_NAME: string;
