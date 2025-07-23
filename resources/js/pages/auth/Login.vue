@@ -21,7 +21,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post('https://onlog-production.up.railway.app/login', {
         onFinish: () => form.reset('password'),
     });
 };
