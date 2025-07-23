@@ -62,13 +62,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth', 'verified', 'user')->group(function () {
 
-    Route::get('/', function () {
-        if (config('app.env') === 'production') {
-            return Redirect::route('profile', [], true);
-        } else {
-            return Redirect::route('profile');
-        }
-    })->name('home');;
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('profile', [DashboardController::class, 'index'])->name('profile');
 
     Route::get('/history', [AttendanceController::class, 'history'])
         ->name('history');
@@ -80,8 +75,6 @@ Route::middleware('auth', 'verified', 'user')->group(function () {
     })->name('absensi.riwayat');
 
     Route::post('/absen', [AttendanceController::class, 'store'])->middleware(['auth'])->name('absen.store');
-
-    Route::get('profile', [DashboardController::class, 'index'])->name('profile');
     Route::get('informasi', [InformationController::class, 'index'])->name('information');
 });
 
