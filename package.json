@@ -2,8 +2,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "build:ssr": "vite build && vite build --ssr",
+        "build": "vite build ",
+        "build:ssr": "vite build && vite build --ssr && test -f && cp public/build/.vite/manifest.json public/build/manifest.json",
         "dev": "vite",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
