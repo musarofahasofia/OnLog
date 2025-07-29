@@ -59,17 +59,9 @@ onMounted(() => {
 
 
 // const userIp = page.props.userIp
-
-function normalizeIp(ip: string): string {
-  return ip
-    .split('.')
-    .map(octet => String(Number(octet))) // Menghapus leading zero
-    .join('.');
-}
-console.log('Client IP:', clientIp, 'Normalized:', page.props.allowed_ips);
 const isOnOfficeNetwork = computed(() => {
-  const normalizedClientIp = normalizeIp(clientIp);
-  return page.props.allowed_ips.some((ipObj: any) => normalizedClientIp.startsWith(normalizeIp(ipObj.ip_address)));
+  const normalizedClientIp = clientIp;
+  return page.props.allowed_ips.some((ipObj: any) => normalizedClientIp.startsWith(ipObj.ip_address));
 });
 
 const absen = (type: 'masuk' | 'pulang') => {
