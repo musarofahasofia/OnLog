@@ -14,6 +14,7 @@ const summary = computed(() => page.props.summary);
 const todayDate = page.props.todayDate;
 const user = page.props.auth.user as User
 const clientIp = page.props.userIp;
+const allowedIps = page.props.allowed_ips;
 console.log(page.props, 'attendanceToday')
 
 const now = ref('')
@@ -59,9 +60,9 @@ onMounted(() => {
 
 // const userIp = page.props.userIp
 
-const isOnOfficeNetwork = computed(() => (clientIp.startsWith('100.64.') ||
-  clientIp.startsWith('100.') ||
-  clientIp === 'kantor-static-ip'))
+const isOnOfficeNetwork = computed(() => {
+  return allowedIps.some((ip: string) => clientIp.value.startsWith(ip))
+})
 
 const absen = (type: 'masuk' | 'pulang') => {
   router.post('/absen', { type }, {

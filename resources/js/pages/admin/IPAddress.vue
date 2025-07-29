@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import { type BreadcrumbItem } from '@/types'
 
 // ✅ Props dari controller
-const props = defineProps<{ ips: Array<{ id: number, ip_address: string, description: string }> }>()
+const props = defineProps<{ ips: Array<{ id: number, ip_address: string, description: string }>, office_ip: any }>()
 const openToast = ref(false)
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -15,25 +15,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/admin/ip-address',
     },
 ]
-
-// State modal & form
-const showForm = ref(false)
-const ip_address = ref('')
-const description = ref('')
-
-// ✅ Simpan IP baru
-function saveIp() {
-    router.post('/admin/ip-address', {
-        ip_address: ip_address.value,
-        description: description.value
-    }, {
-        onSuccess: () => {
-            showForm.value = false
-            ip_address.value = ''
-            description.value = ''
-        }
-    })
-}
 
 // ✅ Hapus IP
 function deleteIp(id: number) {
@@ -46,8 +27,11 @@ function deleteIp(id: number) {
         <div class="p-6 relative">
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-purple-700">Manajemen IP Kantor</h1>
-                <modalCreate @close="openToast = true"/>
+                <div>
+                    <h1 class="text-2xl font-bold text-purple-700">Manajemen IP Kantor</h1>
+                    <p class="text-xs">ip jaringan sekrang: <span class="font-mono">{{ props.office_ip }}</span></p>
+                </div>
+                <modalCreate @close="openToast = true" />
             </div>
 
             <!-- Tabel IP -->
