@@ -60,11 +60,17 @@ onMounted(() => {
 
 // const userIp = page.props.userIp
 
+function normalizeIp(ip: string): string {
+  return ip
+    .split('.')
+    .map(octet => String(Number(octet))) // Menghapus leading zero
+    .join('.');
+}
+
 const isOnOfficeNetwork = computed(() => {
-  return allowedIps.some((item: { ip_address: string }) =>
-    clientIp.value.startsWith(item.ip_address)
-  )
-})
+  const normalizedClientIp = normalizeIp(clientIp);
+  return allowedIps.some((ipObj: any) => normalizedClientIp.startsWith(normalizeIp(ipObj.ip_address)));
+});
 
 const absen = (type: 'masuk' | 'pulang') => {
   router.post('/absen', { type }, {
