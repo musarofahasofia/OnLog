@@ -11,6 +11,5 @@ class OfficeIp extends Model
 
     protected $fillable = [
         'ip_address',
-        'description',
     ];
 }

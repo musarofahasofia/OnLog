@@ -19,15 +19,15 @@ console.log(page.props, 'attendanceToday')
 const now = ref('')
 
 function updateDateTime() {
-  const waktu = new Date()
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }
+    const waktu = new Date()
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }
 
-  now.value = new Intl.DateTimeFormat('id-ID', options).format(waktu)
+    now.value = new Intl.DateTimeFormat('id-ID', options).format(waktu)
 }
 
 // onMounted(async () => {
@@ -40,8 +40,8 @@ function updateDateTime() {
 // })
 
 onMounted(() => {
-  updateDateTime()
-  setInterval(updateDateTime, 1000) // Update tiap detik
+    updateDateTime()
+    setInterval(updateDateTime, 1000) // Update tiap detik
 })
 
 // onMounted(async () => {
@@ -74,29 +74,28 @@ onMounted(() => {
 // }
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Dashboar',
-    href: '/dashboard',
-  },
-  
+    {
+        title: 'Dashboar',
+        href: '/dashboard',
+    },
+
 ];
 </script>
 
-      <template>
-      <AdminAppLayout>
-      <div class="flex flex-col min-h-screen bg-gray-50">
-      <main class="flex-grow w-full p-6">
-        <div class="max-w-7xl mx-auto flex flex-col justify-between h-full">
+<template>
+    <AdminAppLayout>
+        <div class="flex flex-col min-h-screen bg-gray-50">
+            <main class="flex-grow w-full p-6">
+                <div class="max-w-7xl mx-auto flex flex-col justify-between">
 
-      <!-- Header -->
-      <div class="text-center mb-10">
-          <h1 class="text-2xl font-bold text-purple-700">Selamat Datang di Sistem Kehadiran Karyawan</h1>
-          <p class="text-gray-600">Lacak dan kelola kehadiran secara efisien</p>
-      </div>
+                    <!-- Header -->
+                    <div class="text-center mb-10">
+                        <h1 class="text-2xl font-bold text-purple-700">Selamat Datang di Sistem Kehadiran Karyawan</h1>
+                        <p class="text-gray-600">Lacak dan kelola kehadiran secara efisien</p>
+                    </div>
 
-      <!-- Form & Absensi -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        <!-- Pencarian -->
+                    <!-- Form & Absensi -->
+                    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         <div class="bg-white p-4 rounded shadow">
           <h2 class="text-lg font-semibold mb-4">Laporan Kehadiran</h2>
           <input
@@ -106,8 +105,6 @@ const breadcrumbs: BreadcrumbItem[] = [
           />
           <button class="bg-black text-white px-4 py-2 rounded">Cari</button>
         </div>
-
-        <!-- Absensi Hari Ini -->
         <div class="bg-white p-4 rounded shadow">
           <h2 class="text-lg font-semibold mb-2">Nama Karyawan</h2>
           <div v-if="attendanceToday">
@@ -119,34 +116,33 @@ const breadcrumbs: BreadcrumbItem[] = [
             <p class="text-gray-500">Belum ada data absensi hari ini.</p>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <!-- Statistik Kehadiran -->
-      <div class="mt-10">
-        <h2 class="text-2xl font-semibold text-center mb-2">Laporan Kehadiran</h2>
-        <p class="text-lg text-center text-gray-500 mb-8">Lihat data absensi real-time</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-purple-50 text-center border border-purple-200 p-4 rounded-lg">
-          <p class="text-purple-800">Hadir</p>
-          <p class="text-2xl font-bold text-purple-900">{{ summary['Hadir'] || 0 }}</p>
+                    <!-- Statistik Kehadiran -->
+                    <div class="mt-10">
+                        <h2 class="text-2xl font-semibold text-center mb-2">Laporan Kehadiran</h2>
+                        <p class="text-lg text-center text-gray-500 mb-8">Lihat data absensi real-time</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-red-50 text-center border border-red-200 p-4 rounded-lg">
+                                <p class="text-red-800">Tidak hadir</p>
+                                <p class="text-2xl font-bold text-red-900">{{ summary['Sakit'] || 0 }}</p>
+                            </div>
+                            <div class="bg-purple-50 text-center border border-purple-200 p-4 rounded-lg">
+                                <p class="text-purple-800">Hadir</p>
+                                <p class="text-2xl font-bold text-purple-900">{{ summary['Hadir'] || 0 }}</p>
+                            </div>
+                            <div class="bg-yellow-50 text-center border border-yellow-200 p-4 rounded-lg">
+                                <p class="text-yellow-800">Izin</p>
+                                <p class="text-2xl font-bold text-yellow-900">{{ summary['Izin'] || 0 }}</p>
+                            </div>
+                            <div class="bg-orange-50 text-center border border-orange-200 p-4 rounded-lg">
+                                <p class="text-orange-800">Terlambat</p>
+                                <p class="text-2xl font-bold text-orange-900">{{ summary['Terlambat'] || 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        <div class="bg-yellow-50 text-center border border-yellow-200 p-4 rounded-lg">
-          <p class="text-yellow-800">Izin</p>
-          <p class="text-2xl font-bold text-yellow-900">{{ summary['Izin'] || 0 }}</p>
-        </div>
-        <div class="bg-red-50 text-center border border-red-200 p-4 rounded-lg">
-          <p class="text-red-800">Sakit</p>
-          <p class="text-2xl font-bold text-red-900">{{ summary['Sakit'] || 0 }}</p>
-        </div>
-        <div class="bg-orange-50 text-center border border-orange-200 p-4 rounded-lg">
-          <p class="text-orange-800">Terlambat</p>
-          <p class="text-2xl font-bold text-orange-900">{{ summary['Terlambat'] || 0 }}</p>
-        </div>
-      </div>
-      </div>
-    </div>
-  </main>
-  </div>
-  </AdminAppLayout>
+    </AdminAppLayout>
 </template>
-     

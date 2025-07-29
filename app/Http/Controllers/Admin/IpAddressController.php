@@ -21,11 +21,9 @@ class IpAddressController extends Controller
     {
         $request->validate([
             'ip_address' => 'required|ip|unique:office_ips,ip_address',
-            'description' => 'nullable|string'
         ]);
 
-        OfficeIp::create($request->only('ip_address', 'description'));
-
+        OfficeIp::create($request->only('ip_address'));
         return redirect()->back()->with('success', 'IP berhasil ditambahkan');
     }
 

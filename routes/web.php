@@ -16,6 +16,17 @@ Route::get('/client-ip', function (Request $request) {
     ]);
 })->name('client.ip');
 
+Route::get('/debug-env', function () {
+    return [
+        'app_env' => app()->environment(),
+        'env_var' => env('APP_ENV'),
+    ];
+});
+
+Route::get('/debug-ip', function (Request $request) {
+    return $request->headers->all();
+});
+
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/ip-address', [IpAddressController::class, 'index'])->name('admin.ipaddress');
     Route::post('/ip-address', [IpAddressController::class, 'store'])->name('admin.ipaddress.store');

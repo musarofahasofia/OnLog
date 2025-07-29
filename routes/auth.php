@@ -85,5 +85,6 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')-
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
     Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip address');
+    Route::post('ip-address', [IpAddressController::class, 'store'])->name('ip-address.create');
 
 });
