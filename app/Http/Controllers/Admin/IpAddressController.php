@@ -9,18 +9,19 @@ use App\Models\OfficeIp; // ✅ ini import modelnya
 
 class IpAddressController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $ips = OfficeIp::all(); // ✅ Ambil semua IP dari database
         return Inertia::render('admin/IPAddress', [
-            'ips' => $ips
+            'ips' => $ips,
+            'office_ip' => $request->getClientIp()
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'ip_address' => 'required|ip|unique:office_ips,ip_address',
+            'ip_address' => 'required',
         ]);
 
         OfficeIp::create($request->only('ip_address'));
