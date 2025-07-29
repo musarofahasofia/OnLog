@@ -61,7 +61,9 @@ onMounted(() => {
 // const userIp = page.props.userIp
 
 const isOnOfficeNetwork = computed(() => {
-  return allowedIps.some((ip: string) => clientIp.value.startsWith(ip))
+  return allowedIps.some((item: { ip_address: string }) =>
+    clientIp.value.startsWith(item.ip_address)
+  )
 })
 
 const absen = (type: 'masuk' | 'pulang') => {
