@@ -19,15 +19,15 @@ console.log(page.props, 'attendanceToday')
 const now = ref('')
 
 function updateDateTime() {
-  const waktu = new Date()
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }
+    const waktu = new Date()
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }
 
-  now.value = new Intl.DateTimeFormat('id-ID', options).format(waktu)
+    now.value = new Intl.DateTimeFormat('id-ID', options).format(waktu)
 }
 
 // onMounted(async () => {
@@ -40,8 +40,8 @@ function updateDateTime() {
 // })
 
 onMounted(() => {
-  updateDateTime()
-  setInterval(updateDateTime, 1000) // Update tiap detik
+    updateDateTime()
+    setInterval(updateDateTime, 1000) // Update tiap detik
 })
 
 // onMounted(async () => {
@@ -59,156 +59,90 @@ onMounted(() => {
 
 // const userIp = page.props.userIp
 
-const isOnOfficeNetwork = computed(() => (clientIp.startsWith('172.29.') ||
-  clientIp.startsWith('10.') ||
-  clientIp === 'kantor-static-ip'))
+// const isOnOfficeNetwork = computed(() => (clientIp.startsWith('172.29.') ||
+//   clientIp.startsWith('10.') ||
+//   clientIp === 'kantor-static-ip'))
 
-const absen = (type: 'masuk' | 'pulang') => {
-  router.post('/absen', { type }, {
-    preserveScroll: true,
-    onSuccess: () => {
-      router.reload({ only: ['attendanceToday', 'summary'] })
-    },
-    onError: (err) => console.error('Absen gagal', err),
-  })
-}
+// const absen = (type: 'masuk' | 'pulang') => {
+//   router.post('/absen', { type }, {
+//     preserveScroll: true,
+//     onSuccess: () => {
+//       router.reload({ only: ['attendanceToday', 'summary'] })
+//     },
+//     onError: (err) => console.error('Absen gagal', err),
+//   })
+// }
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Profile',
-    href: '/Profile',
-  },
-  
+    {
+        title: 'Dashboar',
+        href: '/dashboard',
+    },
+
 ];
 </script>
 
 <template>
-  <AdminAppLayout :breadcrumbs="breadcrumbs">
-    <div class="p-6 space-y-6 text-gray-800">
+    <AdminAppLayout>
+        <div class="flex flex-col min-h-screen bg-gray-50">
+            <main class="flex-grow w-full p-6">
+                <div class="max-w-7xl mx-auto flex flex-col justify-between">
 
-      <!-- User Info with Solid Background -->
-      <div class="rounded-xl shadow overflow-hidden">
-        <div class="p-6 flex flex-col items-center text-center text-white" style="background-color: #7C81AD;">
-          <!-- Foto Profil -->
-          <img :src="user.photo ? `storage/${user.photo}` : `https://ui-avatars.com/api/?name=${user.name}`"
-            alt="Foto Profil" class="w-32 h-32 rounded-full object-cover border-4 border-white mb-2" />
-          <h2 class="text-xl font-semibold">{{ user.name }}</h2>
-          <p class="text-sm opacity-90">Manajer</p>
+                    <!-- Header -->
+                    <div class="text-center mb-10">
+                        <h1 class="text-2xl font-bold text-purple-700">Selamat Datang di Sistem Kehadiran Karyawan</h1>
+                        <p class="text-gray-600">Lacak dan kelola kehadiran secara efisien</p>
+                    </div>
 
+                    <!-- Form & Absensi -->
+                    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-semibold mb-4">Laporan Kehadiran</h2>
+          <input
+            v-model="search"
+            placeholder="Masukkan nama karyawan"
+            class="w-full border px-3 py-2 rounded mb-3"
+          />
+          <button class="bg-black text-white px-4 py-2 rounded">Cari</button>
         </div>
-      </div>
-
-
-      <!-- Status Realtime -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-2">
-        <h3 class="font-semibold text-lg">Status Hari Ini</h3>
-
-        <div v-if="attendanceToday">
-          <p>
-            <span class="mr-2">
-              Masuk :
-            </span>
-            <span v-if="attendanceToday?.clock_in"
-              :class="{ 'text-green-600': attendanceToday.status === 'Hadir', 'text-yellow-600': attendanceToday.status === 'Terlambat' }">
-              {{ attendanceToday.clock_in }}
-            </span>
-            <span v-else>
-              -
-            </span>
-          </p>
-
-          <p>
-            <span class="mr-2">
-              Pulang :
-            </span>
-            <span v-if="attendanceToday?.clock_out" class="text-red-600">
-              {{ attendanceToday.clock_out }}
-            </span>
-            <span v-else>
-              -
-            </span>
-          </p>
-          <p>
-            <span class="mr-2">
-              Status :
-            </span>
-            <span class="font-bold" :class="{
-              'text-green-600': attendanceToday.status === 'Hadir',
-              'text-yellow-600': attendanceToday.status === 'Terlambat',
-              'text-red-600': attendanceToday.status === 'Tidak Hadir'
-            }">
-              {{ attendanceToday.status }}
-            </span>
-          </p>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-semibold mb-2">Nama Karyawan</h2>
+          <div v-if="attendanceToday">
+            <p>Masuk: {{ attendanceToday.jam_masuk }}</p>
+            <p>Pulang: {{ attendanceToday.jam_pulang }}</p>
+            <p>Status: {{ attendanceToday.status }}</p>
+          </div>
+          <div v-else>
+            <p class="text-gray-500">Belum ada data absensi hari ini.</p>
+          </div>
         </div>
+      </div> -->
 
-        <div v-else>
-          <p class="text-red-600">Belum ada absen hari ini</p>
+                    <!-- Statistik Kehadiran -->
+                    <div class="mt-10">
+                        <h2 class="text-2xl font-semibold text-center mb-2">Laporan Kehadiran</h2>
+                        <p class="text-lg text-center text-gray-500 mb-8">Lihat data absensi real-time</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-red-50 text-center border border-red-200 p-4 rounded-lg">
+                                <p class="text-red-800">Tidak hadir</p>
+                                <p class="text-2xl font-bold text-red-900">{{ summary['Sakit'] || 0 }}</p>
+                            </div>
+                            <div class="bg-purple-50 text-center border border-purple-200 p-4 rounded-lg">
+                                <p class="text-purple-800">Hadir</p>
+                                <p class="text-2xl font-bold text-purple-900">{{ summary['Hadir'] || 0 }}</p>
+                            </div>
+                            <div class="bg-yellow-50 text-center border border-yellow-200 p-4 rounded-lg">
+                                <p class="text-yellow-800">Izin</p>
+                                <p class="text-2xl font-bold text-yellow-900">{{ summary['Izin'] || 0 }}</p>
+                            </div>
+                            <div class="bg-orange-50 text-center border border-orange-200 p-4 rounded-lg">
+                                <p class="text-orange-800">Terlambat</p>
+                                <p class="text-2xl font-bold text-orange-900">{{ summary['Terlambat'] || 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-      </div>
-
-      <!-- Info Tanggal & IP -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-2">
-        <p class="text-black-600">{{ now }}</p>
-        <p>IP: <span class="font-mono">{{ clientIp }}</span></p>
-        <p :class="isOnOfficeNetwork ? 'text-green-600' : 'text-yellow-600'">
-          {{ isOnOfficeNetwork ? 'Jaringan kantor!' : 'Jaringan di luar kantor!' }}
-        </p>
-      </div>
-
-
-
-      <!-- Tombol Absen -->
-      <div class="flex flex-col sm:flex-row gap-4">
-        <button @click="absen('masuk')" :disabled="!isOnOfficeNetwork || attendanceToday?.clock_in" :class="[
-          'rounded-xl px-4 py-2 font-semibold shadow',
-          (!isOnOfficeNetwork || attendanceToday?.clock_in)
-            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-            : 'bg-green-500 text-white hover:bg-green-600'
-        ]">
-          ABSEN MASUK
-        </button>
-
-        <button @click="absen('pulang')" :disabled="!isOnOfficeNetwork || attendanceToday?.clock_out" :class="[
-          'rounded-xl px-4 py-2 font-semibold shadow',
-          (!isOnOfficeNetwork || attendanceToday?.clock_out)
-            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-            : 'bg-red-500 text-white hover:bg-red-600'
-        ]">
-          ABSEN PULANG
-        </button>
-      </div>
-
-
-      <!-- Section: Laporan Kehadiran -->
-      <div class="text-center space-y-2">
-        <h3 class="text-xl font-semibold">Laporan Kehadiran</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Lihat data absensi real-time</p>
-        <button class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
-          <Link :href="route('history')" prefetch
-            class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
-          Lihat Selengkapnya
-          </Link>
-
-        </button>
-      </div>
-
-
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 grid grid-cols-3 gap-4 text-center">
-        <div>
-          <p class="text-lg font-bold">{{ summary?.presence ?? 0 }}</p>
-          <p>Total Kehadiran</p>
-        </div>
-        <div>
-          <p class="text-lg font-bold">{{ summary?.absence ?? 0 }}</p>
-          <p>Total Tidak Hadir</p>
-        </div>
-        <div>
-          <p class="text-lg font-bold">{{ summary?.late ?? 0 }}</p>
-          <p>Total Terlambat</p>
-        </div>
-      </div>
-    </div>
-
-  </AdminAppLayout>
+    </AdminAppLayout>
 </template>

@@ -5,14 +5,25 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, User, Info } from 'lucide-vue-next';
-import AppLogo from './AppLogo.vue';
+import { BookOpen, Folder, LayoutGrid, User, Info, Settings, MapPinned, } from 'lucide-vue-next';
+import AppLogo from '@/components/AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/admin/dashboard',
+        href: '/admin/dashboard', // cek route('admin.dashboard') in your routes file
         icon: User,
+    },
+    {
+        title: 'Informasi',
+        href: '/admin/informasi', // cek route('admin.dashboard') in your routes file
+        icon: Info,
+    },
+    
+    {
+        title: 'IP Address',
+        href: '/admin/ip-address', // cek route('admin.dashboard') in your routes file
+        icon: MapPinned,
     },
 ];
 </script>

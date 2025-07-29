@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminInformationController;
+use App\Http\Controllers\Admin\AdminSettingController;
+use App\Http\Controllers\Admin\IpAddressController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
@@ -80,4 +83,8 @@ Route::middleware('auth', 'verified', 'user')->group(function () {
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
+    Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip address');
+    Route::post('ip-address', [IpAddressController::class, 'store'])->name('ip-address.create');
+
 });
