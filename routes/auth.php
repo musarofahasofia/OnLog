@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth', 'verified', 'user')->group(function () {
 
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('profile', [DashboardController::class, 'index'])->name('profile');
 
     Route::get('/history', [AttendanceController::class, 'history'])
