@@ -17,6 +17,16 @@ use App\Http\Controllers\user\DashboardController;
 use App\Http\Controllers\user\InformationController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    $user = Auth::user();
+
+    if ($user->role == 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('home');
+})->middleware(['auth', 'verified']);
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
@@ -65,7 +75,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth', 'verified', 'user')->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('profile', [DashboardController::class, 'index'])->name('profile');
 
     Route::get('/history', [AttendanceController::class, 'history'])
