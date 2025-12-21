@@ -1,12 +1,17 @@
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
-import path from 'path';
-import tailwindcss from "@tailwindcss/vite";
 import { resolve } from 'node:path';
+import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
     base: '/build/',
+    server: {
+        watch: {
+            usePolling: true,
+        },
+    },
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],

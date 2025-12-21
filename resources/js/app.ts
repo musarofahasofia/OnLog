@@ -6,6 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
+import 'simplebar-vue/dist/simplebar.min.css';
 import axios from 'axios';
 
 axios.defaults.baseURL = window.location.origin;
