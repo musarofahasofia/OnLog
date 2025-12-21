@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\OfficeIp;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,9 +28,11 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('count', 'status');
 
+        $ips = OfficeIp::all();
 
         return Inertia::render('Dashboard', [
             'userIp' => $request->ip(),
+            'allowed_ips' => $ips,
             'todayDate' => now()->translatedFormat('l, d F Y'),
             'attendanceToday' => $attendance
                 ? [
