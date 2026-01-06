@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
-use Inertia\Inertia;
-use App\Models\Attendance;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminDashboardController extends Controller
 {
@@ -15,7 +14,7 @@ class AdminDashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user  = $request->user();
         $today = Carbon::today();
 
         $attendance = Attendance::where('user_id', $user->id)
@@ -27,31 +26,32 @@ class AdminDashboardController extends Controller
             ->groupBy('status')
             ->pluck('count', 'status');
 
-
         return Inertia::render('admin/Dashboard', [
-            'userIp' => $request->ip(),
-            'todayDate' => now()->translatedFormat('l, d F Y'),
+            'userIp'          => $request->ip(),
+            'todayDate'       => now()->translatedFormat('l, d F Y'),
             'attendanceToday' => $attendance
                 ? [
-                    'clock_in' => $attendance->clock_in ? Carbon::parse($attendance->clock_in)->format('H:i') : null,
-                    'clock_out' => $attendance->clock_out ? Carbon::parse($attendance->clock_out)->format('H:i') : null,
-                    'status' => $attendance->status ?? 'Tidak Hadir',
-                ]
+                'clock_in'  => $attendance->clock_in ? Carbon::parse($attendance->clock_in)->format('H:i') : null,
+                'clock_out' => $attendance->clock_out ? Carbon::parse($attendance->clock_out)->format('H:i') : null,
+                'status'    => $attendance->status ?? 'Tidak Hadir',
+            ]
                 : null,
-            'summary' => [
-                        'presence' => $summary->get('Hadir', 0),
-                        'late' => $summary->get('Terlambat', 0),
-                        'absence' => $summary->get('Tidak Hadir', 0),
-                    ],
+            'summary'         => [
+                'presence' => $summary->get('Hadir', 0),
+                'late'     => $summary->get('Terlambat', 0),
+                'absence'  => $summary->get('Tidak Hadir', 0),
+            ],
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function employee()
     {
-        //
+        return Inertia::render('admin/Employee', [
+
+        ]);
     }
 
     /**

@@ -24,7 +24,7 @@ Route::get('/', function () {
         return redirect()->route('admin.dashboard');
     }
 
-    return redirect()->route('home');
+    return redirect()->route('dashboard');
 })->middleware(['auth', 'verified']);
 
 Route::middleware('guest')->group(function () {
@@ -75,8 +75,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth', 'verified', 'user')->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('home');
-    Route::get('profile', [DashboardController::class, 'index'])->name('profile');
+    Route::redirect('/', '/dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/history', [AttendanceController::class, 'history'])
         ->name('history');
@@ -93,6 +93,7 @@ Route::middleware('auth', 'verified', 'user')->group(function () {
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('employee', [AdminDashboardController::class, 'employee'])->name('employee');
     Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
     Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip address');
     Route::post('ip-address', [IpAddressController::class, 'store'])->name('ip-address.create');

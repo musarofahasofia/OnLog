@@ -19,9 +19,17 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import simplebar from 'simplebar-vue';
-import { EllipsisVertical, OctagonAlert } from 'lucide-vue-next';
+import { CalendarPlus, EllipsisVertical, InfoIcon, OctagonAlert } from 'lucide-vue-next';
 
 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
 const page = usePage<SharedData>();
@@ -76,72 +84,80 @@ const absen = (type: 'masuk' | 'pulang') => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile',
-        href: '/Profile',
+        title: 'Dashboard',
+        href: '/Dashboard',
     },
 ];
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-row h-full justify-between min-h-0 max-h-[calc(97.8vh-var(--header-h))]">
-            <div class="p-3 md:p-6 space-y-3 flex-1">
-                <!-- User Info with Solid Background -->
-                <Announcement />
-                <div class="flex gap-5 flex-1">
-                    <div class="flex flex-col  gap-3">
-                        <Card class="py-2 gap-1">
-                            <CardHeader class="mt-1.5 px-6">
-                                <CardTitle>
-                                    <div class="flex justify-between items-center">
-                                        <p class="mb-0.5">IP Address</p>
-                                        <div class="flex gap-2 items-center">
-                                            <p class="font-mono text-base">{{ clientIp }}</p>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <OctagonAlert class="text-coral p-0" :size="20" />
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
-                                                        kantor!
-                                                    </p>
-                                                </TooltipContent>
-                                            </Tooltip>
+        <div
+            class="flex max-w-full w-full h-full justify-between min-h-0 xl:max-h-[calc(97.8vh-var(--header-h))] overflow-hidden min-w-0">
+            <div class="p-3 md:p-6 space-y-6 flex flex-col flex-1 min-w-0 max-w-full overflow-hidden">
+                <div class="flex flex-col gap-3 w-full min-w-0 flex-1 overflow-hidden">
+                    <simplebar class="max-w-full overflow-x-auto min-w-0">
+                        <div class="flex flex-row gap-3  flex-nowrap w-full min-w-0 pb-4 ">
+                            <Announcement />
+                        </div>
+                    </simplebar>
+                    <div
+                        class="flex gap-3 sm:gap-5 flex-1 flex-col sm:flex-row md:flex-col lg:flex-row w-full overflow-y-auto">
+                        <div class="flex flex-col gap-3 w-full sm:w-1/2 md:w-full lg:w-1/2">
+                            <Card class="py-2 gap-1 ">
+                                <CardHeader class="mt-1.5 px-3 md:px-6">
+                                    <CardTitle>
+                                        <div class="flex justify-between items-center">
+                                            <p class="mb-0.5">IP Address</p>
+                                            <div class="flex gap-2 items-center">
+                                                <p class="font-mono text-base">{{ clientIp }}</p>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <OctagonAlert class="text-coral p-0" :size="20" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
+                                                            kantor!
+                                                        </p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </div>
                                         </div>
-                                    </div>
-                                </CardTitle>
-                            </CardHeader>
-                        </Card>
-                        <Card class="py-2 gap-1">
-                            <CardHeader class="mt-1.5 px-6">
-                                <CardTitle>
-                                    <div class="flex justify-between items-center">
-                                        <p class="mb-0.5">Absen</p>
-                                        <div class="flex gap-2 items-center">
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <OctagonAlert class="text-coral p-0" :size="20" />
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
-                                                        kantor!
-                                                    </p>
-                                                </TooltipContent>
-                                            </Tooltip>
+                                    </CardTitle>
+                                </CardHeader>
+                            </Card>
+                            <Card class="py-2 gap-1">
+                                <CardHeader class="mt-1.5 px-3 md:px-6">
+                                    <CardTitle>
+                                        <div class="flex justify-between items-center">
+                                            <p class="mb-0.5">Absen</p>
+                                            <div class="flex gap-2 items-center">
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <OctagonAlert class="text-coral p-0" :size="20" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
+                                                            kantor!
+                                                        </p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </div>
                                         </div>
-                                    </div>
-                                </CardTitle>
-                                <CardContent class="px-0">
-                                    <div class="flex justify-between items-center">
-                                        <Button variant="outline"
-                                            class="text-foreground bg-muted max-w-[140px] flex-1 px-2" disabled>Absen
-                                            Masuk</Button>
-                                        <EllipsisVertical />
-                                        <Button variant="outline"
-                                            class="text-foreground bg-muted max-w-[140px] flex-1 px-2" disabled>Absen
-                                            Pulang</Button>
-                                    </div>
-                                    <!-- <div class="flex justify-between items-center">
+                                    </CardTitle>
+                                    <CardContent class="px-0">
+                                        <div class="flex justify-between items-center">
+                                            <Button variant="outline"
+                                                class="text-foreground bg-muted max-w-[140px] flex-1 px-2"
+                                                disabled>Absen
+                                                Masuk</Button>
+                                            <EllipsisVertical />
+                                            <Button variant="outline"
+                                                class="text-foreground bg-muted max-w-[140px] flex-1 px-2"
+                                                disabled>Absen
+                                                Pulang</Button>
+                                        </div>
+                                        <!-- <div class="flex justify-between items-center">
                                     <Button variant="outline"
                                         class="text-neon-fg max-w-[140px] flex-1 px-2 hover:bg-neon-bg cursor-pointer hover:text-neon-fg">Absen
                                         Masuk</Button>
@@ -150,146 +166,229 @@ const breadcrumbs: BreadcrumbItem[] = [
                                         class="text-crimson-fg max-w-[140px] flex-1 px-2 hover:bg-crimson-bg cursor-pointer hover:text-crimson-fg">Absen
                                         Pulang</Button>
                                 </div> -->
+                                    </CardContent>
+                                </CardHeader>
+                            </Card>
+                            <ActionMenu />
+                        </div>
+                        <div class="w-full sm:w-1/2 md:w-full lg:w-1/2 flex flex-col gap-3">
+                            <Card class="py-2 gap-1">
+                                <CardHeader class="mt-1.5 px-3 md:px-6">
+                                    <CardTitle>
+                                        <div class="flex justify-between items-center">
+                                            <p>Statistic</p>
+                                            <p class="font-normal text-muted-foreground text-sm px-2 rounded">
+                                                Desember 2025
+                                            </p>
+                                        </div>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent class="grid grid-cols-2 gap-1.5 text-xs px-6">
+                                    <Card class="py-2">
+                                        <CardContent class="px-4">
+                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p>Total Masuk</p>
+                                        </CardContent>
+                                    </Card>
+                                    <Card class="py-2">
+                                        <CardContent class="px-4">
+                                            <div class="flex items-end space-x-1">
+                                                <p class=" text-3xl font-bold">23<span></span></p>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <InfoIcon class="text-muted-foreground p-0 mb-1.5" :size="16" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
+                                                            kantor!
+                                                        </p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </div>
+                                            <p>Izin/Cuti</p>
+                                        </CardContent>
+                                    </Card>
+                                    <Card class="py-2">
+                                        <CardContent class="px-4">
+                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p class="text-nowrap">Sisa Cuti Tahunan</p>
+                                        </CardContent>
+                                    </Card>
+                                    <Card class="py-2">
+                                        <CardContent class="px-4">
+                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p>Terlambat</p>
+                                        </CardContent>
+                                    </Card>
                                 </CardContent>
-                            </CardHeader>
-                        </Card>
-                        <ActionMenu />
-                    </div>
-                    <div>
-                        <Card class="py-4 gap-1">
-                            <CardHeader class="mt-1 px-6">
-                                <CardTitle>
-                                    <div class="flex justify-between items-center">
-                                        <p>Status Hari Ini</p>
-                                        <p
-                                            class="font-normal text-tangerine bg-tangerine/8 text-sm px-2 py-0.5 rounded">
-                                            Dinas Luar</p>
-                                    </div>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent class="flex flex-col gap-1.5 text-xs px-6">
-                                <p>{{ now }}</p>
-                                <div class="flex gap-3">
-                                    <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                    <p class="py-0.5">08:00</p>
-                                    <p class="py-0.5">:</p>
-                                    <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </Card>
+                            <Card class="py-2 gap-1 min-h-0 flex flex-col">
+                                <CardHeader class="mt-1 px-6">
+                                    <CardTitle>
+                                        <div class="flex justify-between items-center">
+                                            <p>Status Hari Ini</p>
+                                            <p
+                                                class="font-normal text-tangerine bg-tangerine/8 text-sm px-2 py-0.5 rounded">
+                                                Dinas Luar</p>
+                                        </div>
+                                    </CardTitle>
+                                </CardHeader>
+                                <div class="min-h-0 flex-1 flex flex-col px-6 gap-1.5 text-xs ">
+                                    <p>{{ now }}</p>
+                                    <simplebar data-simplebar-auto-hide="true"
+                                        class="min-h-0 flex flex-col flex-1">
+                                        <div class="flex flex-col gap-1.5">
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">09:20</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                                <p class="py-0.5">08:00</p>
+                                                <p class="py-0.5">:</p>
+                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                            </div>
+                                        </div>
+                                    </simplebar>
                                 </div>
-                                <div class="flex gap-3">
-                                    <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                    <p class="py-0.5">09:20</p>
-                                    <p class="py-0.5">:</p>
-                                    <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                </div>
-                            </CardContent>
-                        </Card>
+
+
+
+                            </Card>
+                        </div>
+
                     </div>
-
-                </div>
-
-                <!-- <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-2">
-                <h3 class="font-semibold text-lg">Status Hari Ini</h3>
-
-                <div v-if="attendanceToday">
-                    <p>
-                        <span class="mr-2">
-                            Masuk :
-                        </span>
-                        <span v-if="attendanceToday?.clock_in"
-                            :class="{ 'text-green-600': attendanceToday.status === 'Hadir', 'text-yellow-600': attendanceToday.status === 'Terlambat' }">
-                            {{ attendanceToday.clock_in }}
-                        </span>
-                        <span v-else>
-                            -
-                        </span>
-                    </p>
-
-                    <p>
-                        <span class="mr-2">
-                            Pulang :
-                        </span>
-                        <span v-if="attendanceToday?.clock_out" class="text-red-600">
-                            {{ attendanceToday.clock_out }}
-                        </span>
-                        <span v-else>
-                            -
-                        </span>
-                    </p>
-                    <p>
-                        <span class="mr-2">
-                            Status :
-                        </span>
-                        <span class="font-bold" :class="{
-                            'text-green-600': attendanceToday.status === 'Hadir',
-                            'text-yellow-600': attendanceToday.status === 'Terlambat',
-                            'text-red-600': attendanceToday.status === 'Tidak Hadir'
-                        }">
-                            {{ attendanceToday.status }}
-                        </span>
-                    </p>
-                </div>
-
-                <div v-else>
-                    <p class="text-red-600">Belum ada absen hari ini</p>
                 </div>
             </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-2">
-                <p class="text-black-600">{{ now }}</p>
-                <p>IP: <span class="font-mono">{{ clientIp }}</span></p>
-                <p :class="isOnOfficeNetwork ? 'text-green-600' : 'text-yellow-600'">
-                    {{ isOnOfficeNetwork ? 'Jaringan kantor!' : 'Jaringan di luar kantor!' }}
-                </p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button @click="absen('masuk')" :disabled="!isOnOfficeNetwork || attendanceToday?.clock_in" :class="[
-                    'rounded-xl px-4 py-2 font-semibold shadow',
-                    (!isOnOfficeNetwork || attendanceToday?.clock_in)
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                        : 'bg-green-500 text-white hover:bg-green-600'
-                ]">
-                    ABSEN MASUK
-                </button>
-
-                <button @click="absen('pulang')" :disabled="!isOnOfficeNetwork || attendanceToday?.clock_out" :class="[
-                    'rounded-xl px-4 py-2 font-semibold shadow',
-                    (!isOnOfficeNetwork || attendanceToday?.clock_out)
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                        : 'bg-red-500 text-white hover:bg-red-600'
-                ]">
-                    ABSEN PULANG
-                </button>
-            </div>
-
-            <div class="text-center space-y-2">
-                <h3 class="text-xl font-semibold">Laporan Kehadiran</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Lihat data absensi real-time</p>
-                <button class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
-                    <Link :href="route('history')" prefetch
-                        class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
-                        Lihat Selengkapnya
-                    </Link>
-
-                </button>
-            </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 grid grid-cols-3 gap-4 text-center">
-                <div>
-                    <p class="text-lg font-bold">{{ summary?.presence ?? 0 }}</p>
-                    <p>Total Kehadiran</p>
+            <div
+                class="hidden xl:flex max-w-80 bg-sand/30 flex-col flex-1 rounded-l-2xl shadow-md min-w-0 pl-10 pr-5 pt-8 gap-6">
+                <div class="flex justify-between">
+                    <p class="text-lg font-extrabold">Calendar</p>
                 </div>
-                <div>
-                    <p class="text-lg font-bold">{{ summary?.absence ?? 0 }}</p>
-                    <p>Total Tidak Hadir</p>
-                </div>
-                <div>
-                    <p class="text-lg font-bold">{{ summary?.late ?? 0 }}</p>
-                    <p>Total Terlambat</p>
-                </div>
-            </div> -->
+                <simplebar data-simplebar-auto-hide="true" class="flex overflow-y-auto min-h pr-1 mb-3">
+                    <div class="flex flex-col gap-6">
+                        <div class="flex flex-col gap-3 lg:text-sm text-xs ">
+                            <p class="font-bold">{{ now }}</p>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">08:00</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">09:20</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 text-sm">
+                            <p class="font-bold">{{ now }}</p>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">08:00</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">09:20</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 text-sm">
+                            <p class="font-bold">{{ now }}</p>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">08:00</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">09:20</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 text-sm">
+                            <p class="font-bold">{{ now }}</p>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">08:00</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">09:20</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3 text-sm">
+                            <p class="font-bold">{{ now }}</p>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">08:00</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
+                                <p class="py-0.5">09:20</p>
+                                <p class="py-0.5">:</p>
+                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
+                            </div>
+                        </div>
+                    </div>
+                </simplebar>
             </div>
-
         </div>
 
     </AppLayout>

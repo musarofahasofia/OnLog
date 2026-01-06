@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 
 @import "tw-animate-css";
-
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -69,32 +68,16 @@
     --color-tangerine: hsl(var(--tangerine));
     --color-amber: hsl(var(--amber));
     --color-sand: hsl(var(--sand));
+    --color-forest: hsl(var(--forest));
 
     --color-palette-foreground: hsl(var(--palette-foreground));
 
-    --color-crimson-fg: hsl(var(--crimson-fg));
-    --color-crimson-bg: hsl(var(--crimson-bg));
+    --color-danger: hsl(var(--accent-1));
+    --color-warning: hsl(var(--accent-3));
+    --color-success: hsl(var(--accent-4));
+    --color-info-alt: hsl(var(--accent-2));
+    --color-info: hsl(var(--accent-5));
 
-    --color-flame-fg: hsl(var(--flame-fg));
-    --color-flame-bg: hsl(var(--flame-bg));
-
-    --color-lemon-fg: hsl(var(--lemon-fg));
-    --color-lemon-bg: hsl(var(--lemon-bg));
-
-    --color-neon-fg: hsl(var(--neon-fg));
-    --color-neon-bg: hsl(var(--neon-bg));
-
-    --color-aqua-fg: hsl(var(--aqua-fg));
-    --color-aqua-bg: hsl(var(--aqua-bg));
-
-    --color-sky-fg: hsl(var(--sky-fg));
-    --color-sky-bg: hsl(var(--sky-bg));
-
-    --color-royal-fg: hsl(var(--royal-fg));
-    --color-royal-bg: hsl(var(--royal-bg));
-
-    --color-violet-fg: hsl(var(--violet-fg));
-    --color-violet-bg: hsl(var(--violet-bg));
 }
 
 /*
@@ -114,6 +97,8 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+
 }
 
 @layer utilities {
@@ -124,6 +109,18 @@
             'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
             'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
             'Noto Color Emoji';
+    }
+
+    .dark [data-simplebar] .simplebar-scrollbar::before {
+        background-color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    [data-simplebar] .simplebar-scrollbar {
+        width: 12px;
+    }
+
+    [data-simplebar] .simplebar-scrollbar.simplebar-visible::before {
+        opacity: 0.7;
     }
 
 }
@@ -174,41 +171,16 @@
     --coral: 1 100% 69%;
     --tangerine: 22 100% 60%;
     --amber: 39 100% 50%;
-    --sand: 41 100% 75%;
+    --sand: 41 95% 92%;
+    --forest: 125, 44%, 46%;
 
     --palette-foreground: 0 0% 100%;
 
-    /* RED */
-    --crimson-fg: 0 85% 55%;
-    --crimson-bg: 0 85% 55% / 0.12;
-
-    /* ORANGE */
-    --flame-fg: 23 100% 55%;
-    --flame-bg: 23 100% 55% / 0.12;
-
-    /* YELLOW (TEXT-SAFE) */
-    --lemon-fg: 45 95% 45%;
-    --lemon-bg: 45 95% 45% / 0.15;
-
-    /* GREEN (NOT NEON) */
-    --neon-fg: 140 65% 45%;
-    --neon-bg: 140 65% 45% / 0.12;
-
-    /* AQUA */
-    --aqua-fg: 174 63% 45%;
-    --aqua-bg: 174 63% 45% / 0.12;
-
-    /* SKY */
-    --sky-fg: 195 57% 48%;
-    --sky-bg: 195 57% 48% / 0.12;
-
-    /* ROYAL */
-    --royal-fg: 231 85% 60%;
-    --royal-bg: 231 85% 60% / 0.12;
-
-    /* VIOLET */
-    --violet-fg: 284 60% 55%;
-    --violet-bg: 284 60% 55% / 0.12;
+    --accent-1: 0 100% 61% / 0.9;
+    --accent-2: 42 100% 50% / 0.9;
+    --accent-3: 47 84% 61%;
+    --accent-4: 99 100% 47% / 0.9;
+    --accent-5: 199 100% 59% / 0.9;
 }
 
 .dark {
@@ -249,7 +221,7 @@
 
     /* Custom Color */
 
-    --abyss: 197 100% 9% / 0.8;
+    --abyss: 197 100% 9%;
     --ocean: 201 100% 18% / 0.8;
     --indigo: 214 45% 32% / 0.8;
     --plum: 295 28% 43% / 0.8;
@@ -257,18 +229,17 @@
     --coral: 1 100% 69% / 0.8;
     --tangerine: 22 100% 60% / 0.8;
     --amber: 39 100% 50% / 0.8;
-    --sand: 41 100% 75% / 0.8;
+    --sand: 41 31% 32%;
+    --forest: 125 44% 46% / 0.8 ;
 
     --palette-foreground: 0 0% 100%;
 
-    --crimson-bg: 0 85% 55% / 0.15;
-    --flame-bg: 23 100% 55% / 0.15;
-    --lemon-bg: 45 95% 45% / 0.15;
-    --neon-bg: 140 65% 45% / 0.15;
-    --aqua-bg: 174 63% 45% / 0.15;
-    --sky-bg: 195 57% 48% / 0.15;
-    --royal-bg: 231 85% 60% / 0.15;
-    --violet-bg: 284 60% 55% / 0.15;
+    --accent-1: 0 100% 61%/ 0.8;
+    --accent-2: 42 100% 50%/ 0.8;
+    --accent-3: 43 69% 59%;
+    --accent-4: 99 100% 47%/ 0.8;
+    --accent-5: 199 100% 59%/ 0.8;
+
 }
 
 @layer base {
