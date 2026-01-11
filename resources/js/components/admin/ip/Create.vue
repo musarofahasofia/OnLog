@@ -1,4 +1,4 @@
-<script setup lang="ts">
+    <script setup lang="ts">
 import { useMagicKeys, whenever } from '@vueuse/core'
 import { Dialog, DialogTrigger, DialogClose, DialogContent, DialogOverlay, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ref } from 'vue'

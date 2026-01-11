@@ -98,7 +98,10 @@
         border-color: var(--color-gray-200, currentColor);
     }
 
-
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
 }
 
 @layer utilities {
@@ -230,7 +233,7 @@
     --tangerine: 22 100% 60% / 0.8;
     --amber: 39 100% 50% / 0.8;
     --sand: 41 31% 32%;
-    --forest: 125 44% 46% / 0.8 ;
+    --forest: 125 44% 46% / 0.8;
 
     --palette-foreground: 0 0% 100%;
 

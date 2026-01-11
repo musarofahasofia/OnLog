@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminEmployeeController;
 use App\Http\Controllers\Admin\AdminInformationController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\IpAddressController;
@@ -13,8 +14,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\user\DashboardController;
-use App\Http\Controllers\user\InformationController;
+use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\InformationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -92,10 +93,17 @@ Route::middleware('auth', 'verified', 'user')->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')->group(function () {
+
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('employee', [AdminDashboardController::class, 'employee'])->name('employee');
+
+    Route::get('employee', [AdminEmployeeController::class, 'index'])->name('employee');
+    Route::post('employee/create', [AdminEmployeeController::class, 'create'])->name('employee.create');
+
+
     Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
+
     Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip address');
+
     Route::post('ip-address', [IpAddressController::class, 'store'])->name('ip-address.create');
 
 });

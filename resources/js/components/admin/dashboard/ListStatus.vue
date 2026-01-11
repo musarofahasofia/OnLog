@@ -20,6 +20,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from '@/components/ui/avatar'
+import DetailStatus from './DetailStatus.vue';
 
 const menus = [
     {
@@ -27,8 +28,8 @@ const menus = [
         title: 'Masuk',
         icon: AlarmClockCheck,
         dialog: {
-            title: 'Izin Cuti',
-            description: 'Form pengajuan izin cuti karyawan.',
+            title: 'Masuk',
+            description: 'List karyawan masuk tepat waktu',
         },
         color: 'bg-forest hover:bg-forest/90',
         karyawan: 14
@@ -39,7 +40,7 @@ const menus = [
         icon: CalendarPlus,
         dialog: {
             title: 'Izin Cuti',
-            description: 'Form pengajuan izin cuti karyawan.',
+            description: 'List karyawan cuti',
         },
         color: 'bg-rose hover:bg-rose/90',
         karyawan: 2
@@ -50,7 +51,7 @@ const menus = [
         icon: Building,
         dialog: {
             title: 'Dinas Luar',
-            description: 'Pengajuan tugas dinas luar kantor.',
+            description: 'List karyawan dinas luar',
         },
         color: 'bg-ocean hover:bg-ocean/90',
         karyawan: 3
@@ -61,7 +62,7 @@ const menus = [
         icon: ClockArrowUp,
         dialog: {
             title: 'Lembur',
-            description: 'Pengajuan lembur karyawan.',
+            description: 'List karyawan yang mengajukan lembur',
         },
         color: 'bg-tangerine hover:bg-tangerine/90',
         karyawan: 5
@@ -71,8 +72,8 @@ const menus = [
         title: 'Terlambat',
         icon: ClockArrowUp,
         dialog: {
-            title: 'Lembur',
-            description: 'Pengajuan lembur karyawan.',
+            title: 'Terlambat',
+            description: 'List karyawan yang terlambat',
         },
         color: 'bg-amber hover:bg-amber/90',
         karyawan: 2
@@ -82,8 +83,8 @@ const menus = [
         title: 'Absen',
         icon: ClockArrowUp,
         dialog: {
-            title: 'Lembur',
-            description: 'Pengajuan lembur karyawan.',
+            title: 'Absen',
+            description: 'List karyawan tidak ada keterangan',
         },
         color: 'bg-coral hover:bg-coral/90',
         karyawan: 1
@@ -156,7 +157,7 @@ const activeMenu = ref(null) as any
     </Card>
 
     <Dialog :open="!!activeMenu" @update:open="val => !val && (activeMenu = null)">
-        <DialogContent v-if="activeMenu">
+        <DialogContent v-if="activeMenu" class="sm:max-w-xl">
             <DialogHeader class="min-w-0">
                 <DialogTitle>
                     {{ activeMenu.dialog.title }}
@@ -165,7 +166,7 @@ const activeMenu = ref(null) as any
                     {{ activeMenu.dialog.description }}
                 </DialogDescription>
             </DialogHeader>
-            <component :is="activeMenu.action" @close="activeMenu = null" />
+            <DetailStatus />
         </DialogContent>
     </Dialog>
 </template>

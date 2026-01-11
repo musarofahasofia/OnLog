@@ -19,7 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             overflow-hidden
             @[1007px]:h-[calc(100vh-var(--header-h)-17px)]
         ">
-                <div class="flex flex-col py-3 px-8 flex-1">
+                <div class="flex flex-col py-3 px-8 flex-1 overflow-x-auto">
                     <TableEmployee />
                 </div>
             </div>

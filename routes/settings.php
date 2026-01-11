@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
-    Route::redirect('settings', '/settings/profile');
+    Route::redirect('settings', '/settings/password');
 
     Route::post('settings/profile-photo', [ProfilePhotoController::class, 'update'])->name('profile.update-photo');
 

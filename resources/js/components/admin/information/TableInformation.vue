@@ -20,48 +20,55 @@ import {
     TableHeader, TableRow,
 } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import AddEmployee from './AddEmployee.vue'
-
-export interface Payment {
-    id: string
-    amount: number
-    status: 'pending' | 'processing' | 'success' | 'failed'
-    email: string
-}
+import AddInformation from './AddInformation.vue'
+import simplebar from 'simplebar-vue'
 
 const addDialog = ref(false)
 
-const data: Payment[] = [
-    {
-        id: 'm5gr84i9',
-        amount: 316,
-        status: 'success',
-        email: 'ken99@yahoo.com',
-    },
-    {
-        id: '3u1reuv4',
-        amount: 242,
-        status: 'success',
-        email: 'Abe45@gmail.com',
-    },
-    {
-        id: 'derv1ws0',
-        amount: 837,
-        status: 'processing',
-        email: 'Monserrat44@gmail.com',
-    },
-    {
-        id: '5kma53ae',
-        amount: 874,
-        status: 'success',
-        email: 'Silas22@gmail.com',
-    },
-    {
-        id: 'bhqecj4p',
-        amount: 721,
-        status: 'failed',
-        email: 'carmella@hotmail.com',
-    },
+export interface Information {
+    title: string
+    content: string
+    type: string
+    status: string
+    end_date: string
+}
+
+const data: Information[] = [
+  {
+    title: 'Pengumuman Libur Nasional',
+    content: 'Kantor akan tutup pada tanggal 17 Agustus untuk memperingati Hari Kemerdekaan.',
+    type: 'pengumuman',
+    status: 'aktif',
+    end_date: '2026-08-17',
+  },
+  {
+    title: 'Perubahan Jam Kerja',
+    content: 'Mulai bulan depan, jam kerja akan dimulai pukul 08.00 hingga 16.00.',
+    type: 'kebijakan',
+    status: 'nonaktif',
+    end_date: '2026-02-01',
+  },
+  {
+    title: 'Pemberitahuan Maintenance Sistem',
+    content: 'Sistem akan mengalami downtime sementara pada tanggal 12 Januari 2026.',
+    type: 'peringatan',
+    status: 'aktif',
+    end_date: '2026-01-12',
+  },
+  {
+    title: 'Kegiatan Donor Darah',
+    content: 'Akan diadakan kegiatan donor darah di aula utama pada hari Jumat.',
+    type: 'kegiatan',
+    status: 'aktif',
+    end_date: '2026-03-20',
+  },
+  {
+    title: 'Pelatihan Karyawan Baru',
+    content: 'Pelatihan akan dilakukan selama dua minggu untuk karyawan baru di departemen IT.',
+    type: 'kegiatan',
+    status: 'selesai',
+    end_date: '2026-01-25',
+  },
 ]
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
@@ -71,7 +78,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
     onExpand: () => void
 }>()
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<Information>[] = [
     {
         id: 'select',
         // header: ({ table }) => h(Checkbox, {
@@ -88,20 +95,19 @@ const columns: ColumnDef<Payment>[] = [
         // enableHiding: false,
     },
     {
-        accessorKey: 'status',
-        header: 'Nama',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        accessorKey: 'title',
+        header: 'Judul',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('title')),
     },
     {
-        accessorKey: 'email',
-        header: ({ column }) => {
-            return h(Button, {
-                class: 'has-[>svg]:px-0',
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
+        accessorKey: 'content',
+        header: 'Konten',
+        cell: ({ row }) => h('div', { class: 'capitalize min-w-0 whitespace-normal break-words line-clamp-1' }, row.getValue('content')),
+    },
+    {
+        accessorKey: 'type',
+        header: 'Jenis informasi',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('type')),
     },
     {
         accessorKey: 'status',
@@ -109,9 +115,9 @@ const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
     },
     {
-        accessorKey: 'status',
-        header: 'Jabatan',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        accessorKey: 'end_date',
+        header: 'Berakhir pada',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('end_date')),
     },
     {
         id: 'actions',
@@ -119,10 +125,10 @@ const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => {
             const payment = row.original
 
-            return h(ReuseTemplate, {
-                payment,
-                onExpand: row.toggleExpanded,
-            })
+            // return h(ReuseTemplate, {
+            //     payment,
+            //     onExpand: row.toggleExpanded,
+            // })
         },
     },
 ]
@@ -165,7 +171,7 @@ function copy(id: string) {
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
                 <div class="w-full flex-1 flex justify-end">
-                    <Button variant="ghost" class="h-6 w-8 p-0">
+                    <Button variant="ghost" class="h-8 w-8 p-0">
                         <span class="sr-only">Open menu</span>
                         <MoreVertical class="h-4 w-4" />
                     </Button>
@@ -182,22 +188,22 @@ function copy(id: string) {
             </DropdownMenuContent>
         </DropdownMenu>
     </DefineTemplate>
-    <div class="flex-1 overflow-x-auto w-full">
-        <div class="flex justify-between items-center py-4">
-            <Input class="max-w-sm" placeholder="Filter emails..."
+    <div class="flex-1 overflow-x-auto">
+        <div class="flex justify-end items-center py-4">
+            <!-- <Input class="max-w-sm" placeholder="Filter emails..."
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
-                @update:model-value=" table.getColumn('email')?.setFilterValue($event)" />
+                @update:model-value=" table.getColumn('email')?.setFilterValue($event)" /> -->
             <div class="flex gap-4">
                 <Button variant="secondary" @click="addDialog = true"
                     class="ml-auto bg-abyss/60 text-white hover:bg-abyss/30 cursor-pointer border ">
                     <Plus />
-                    Karyawan
+                    Informasi
                 </Button>
             </div>
         </div>
         <div class="max-w-full border rounded-lg overflow-hidden overflow-x-auto">
-            <Table>
-                <TableHeader class="overflow-hidden">
+            <Table class="min-w-full">
+                <TableHeader>
                     <TableRow class="" v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead class="bg-abyss/60 text-white " v-for="header in headerGroup.headers"
                             :key="header.id">
@@ -230,7 +236,6 @@ function copy(id: string) {
                 </TableBody>
             </Table>
         </div>
-
         <div class="flex items-center justify-end space-x-2 py-4">
             <div class="space-x-2">
                 <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()"
@@ -247,12 +252,12 @@ function copy(id: string) {
         <template v-if="addDialog">
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Tambah Karyawan</DialogTitle>
+                    <DialogTitle>Tambah Informasi</DialogTitle>
                     <DialogDescription>
-                        Isi formulir berikut untuk mendaftarkan karyawan baru.
+                        Isi formulir berikut untuk membuat informasi/pengumuman baru
                     </DialogDescription>
                 </DialogHeader>
-                <AddEmployee/>
+                <AddInformation />
             </DialogContent>
         </template>
     </Dialog>
