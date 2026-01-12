@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
+import { User, type BreadcrumbItem } from '@/types';
 import TableEmployee from '@/components/admin/employee/TableEmployee.vue';
+
+const { user } = defineProps<{
+  user: User[]
+}>()
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             @[1007px]:h-[calc(100vh-var(--header-h)-17px)]
         ">
                 <div class="flex flex-col py-3 px-8 flex-1 overflow-x-auto">
-                    <TableEmployee />
+                    <TableEmployee :users="user" />
                 </div>
             </div>
         </div>

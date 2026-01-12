@@ -21,6 +21,13 @@ import {
 } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import AddEmployee from './AddEmployee.vue'
+import { useToast } from "vue-toastification";
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar'
+import { User } from '@/types'
 
 export interface Payment {
     id: string
@@ -28,41 +35,28 @@ export interface Payment {
     status: 'pending' | 'processing' | 'success' | 'failed'
     email: string
 }
-
 const addDialog = ref(false)
+const toast = useToast();
 
-const data: Payment[] = [
+function callToast(type: "success" | "error" | "info" | "warning", message: string) {
+    const toastMap = {
+        success: toast.success,
+        error: toast.error,
+        info: toast.info,
+        warning: toast.warning,
+    };
+
+    toastMap[type]?.(message);
+}
+
+const props = withDefaults(
+    defineProps<{
+        users?: User[]
+    }>(),
     {
-        id: 'm5gr84i9',
-        amount: 316,
-        status: 'success',
-        email: 'ken99@yahoo.com',
-    },
-    {
-        id: '3u1reuv4',
-        amount: 242,
-        status: 'success',
-        email: 'Abe45@gmail.com',
-    },
-    {
-        id: 'derv1ws0',
-        amount: 837,
-        status: 'processing',
-        email: 'Monserrat44@gmail.com',
-    },
-    {
-        id: '5kma53ae',
-        amount: 874,
-        status: 'success',
-        email: 'Silas22@gmail.com',
-    },
-    {
-        id: 'bhqecj4p',
-        amount: 721,
-        status: 'failed',
-        email: 'carmella@hotmail.com',
-    },
-]
+        users: () => [],
+    }
+)
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
     payment: {
@@ -71,7 +65,7 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
     onExpand: () => void
 }>()
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<User>[] = [
     {
         id: 'select',
         // header: ({ table }) => h(Checkbox, {
@@ -88,9 +82,31 @@ const columns: ColumnDef<Payment>[] = [
         // enableHiding: false,
     },
     {
-        accessorKey: 'status',
+        accessorKey: 'name',
         header: 'Nama',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        cell: ({ row }) => h(
+            'div',
+            { class: 'flex items-center space-x-3 capitalize' },
+            [
+                h(
+                    Avatar,
+                    { class: 'size-8' },
+                    {
+                        default: () => [
+                            h(AvatarImage, { class: "object-cover object-center w-full h-full",
+                                src: row.original.photo,
+                            }),
+                            h(
+                                AvatarFallback,
+                                {},
+                                () => row.original.name.charAt(0)
+                            ),
+                        ],
+                    }
+                ),
+                h('span', {}, row.getValue('name')),
+            ]
+        ),
     },
     {
         accessorKey: 'email',
@@ -106,12 +122,12 @@ const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.status.status),
     },
     {
         accessorKey: 'status',
         header: 'Jabatan',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.jabatan),
     },
     {
         id: 'actions',
@@ -133,8 +149,8 @@ const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 
-const table = useVueTable({
-    data,
+const table = useVueTable<User>({
+    data: props.users,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -252,7 +268,7 @@ function copy(id: string) {
                         Isi formulir berikut untuk mendaftarkan karyawan baru.
                     </DialogDescription>
                 </DialogHeader>
-                <AddEmployee/>
+                <AddEmployee @close="addDialog = false" @toast="callToast" />
             </DialogContent>
         </template>
     </Dialog>

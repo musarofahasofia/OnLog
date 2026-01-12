@@ -2,8 +2,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Services\CloudinaryService;
 use App\Models\User;
+use App\Models\UserStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class AdminEmployeeController extends Controller
@@ -13,9 +16,10 @@ class AdminEmployeeController extends Controller
      */
     public function index()
     {
-
+        $user = User::with('status')->where('role', 'user')->get();
 
         return Inertia::render('admin/Employee', [
+            'user' => $user,
         ]);
     }
 
@@ -24,8 +28,33 @@ class AdminEmployeeController extends Controller
      */
     public function create(Request $request)
     {
-        dd($request->all());
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'user',
+            'jabatan'  => $request->jabatan,
+        ]);
 
+        $status = UserStatus::updateOrCreate([
+            'user_id' => $user->id,
+        ], [
+            'status' => 'new',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $photoPath = CloudinaryService::uploadImage(
+                $request->file('photo'),
+                'user',
+                $user->id,
+                'photo-profile'
+            );
+
+            $user->update([
+                'photo'      => $photoPath['url'],
+                'storage_id' => $photoPath['public_id'],
+            ]);
+        }
     }
 
     /**

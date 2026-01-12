@@ -4,13 +4,19 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
-
+import { computed, onMounted } from 'vue'
+import { useToast } from 'vue-toastification';
+import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
+const page = usePage<SharedData>();
+const user = computed(() => page.props.auth.user);
+const toast = useToast()
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Pengaturan Kata Sandi',
@@ -30,7 +36,10 @@ const form = useForm({
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            form.reset()
+            toast.success('Berhasil memperbarui password')
+        },
         onError: (errors: any) => {
             if (errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -48,10 +57,16 @@ const updatePassword = () => {
         },
     });
 };
+
+const Layout = computed(() => {
+    return user.value?.role === 'admin'
+        ? AdminAppLayout
+        : AppLayout
+})
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbItems">
+    <Component :is="Layout" :breadcrumbs="breadcrumbItems">
         <Head title="Password settings" />
 
         <SettingsLayout>
@@ -115,5 +130,5 @@ const updatePassword = () => {
                 </form>
             </div>
         </SettingsLayout>
-    </AppLayout>
+    </Component :is="Layout">
 </template>

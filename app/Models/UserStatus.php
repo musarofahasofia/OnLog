@@ -5,12 +5,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserStatus extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'status',
-        'start_date',
-        'end_date',
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'user_id',
+    //     'status',
+    //     'start_date',
+    //     'end_date',
+    // ];
 
     public function user()
     {

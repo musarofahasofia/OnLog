@@ -30,11 +30,20 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    photo?: string;
+    photo: string;
+    jabatan: string;
+    status: Status;
+}
+
+export interface Status {
+    id: number;
+    user: User;
+    status: string;
+    start_date: string;
+    end_date: string;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

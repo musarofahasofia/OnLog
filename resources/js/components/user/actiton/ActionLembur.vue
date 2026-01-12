@@ -13,29 +13,50 @@ import {
 import { ref, watch, shallowRef } from 'vue'
 import { Textarea } from '@/components/ui/textarea'
 import Input from '@/components/ui/input/Input.vue'
+import { useForm } from '@inertiajs/vue3'
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close','refresh','toast'])
 const defaultPlaceholder = today(getLocalTimeZone())
 
 // form input
 const start_date = shallowRef(today(getLocalTimeZone())) as any
-const start_time = ref(undefined)
-const end_time = ref(undefined)
-const tujuan = ref('')
-const cuti_desc = ref('')
+const start_time = ref('')
+const end_time = ref('')
+const desc = ref('')
 
 const df = new DateFormatter('en-US', {
     dateStyle: 'long',
 })
 
+const form = useForm({
+    date: '',
+    start_at: '',
+    end_at: '',
+    desc: '',
+})
+
+
 const handleSubmit = (e: Event) => {
-    e.preventDefault() // biar gak reload
-    console.log({
-        cuti_type: tujuan.value,
-        start_date: start_date.value?.toString(),
-        cuti_desc: cuti_desc.value
+    e.preventDefault()
+
+    form.date = start_date.value?.toString(),
+    form.start_at = start_time.value
+    form.end_at = end_time.value
+    form.desc = desc.value
+
+    form.post(route('request-overtime.create'), {
+        forceFormData: true,
+        onSuccess: () => {
+            emit('close')
+            emit('refresh')
+            emit('toast', 'success', 'Berhasil mengajukan lembur')
+        },
+        onError: (errors) => {
+            console.log('Ada error validasi ❌', errors)
+        },
     })
 }
+
 </script>
 
 <template>
@@ -73,12 +94,12 @@ const handleSubmit = (e: Event) => {
         </div>
         <div class="grid gap-1.5">
             <Label>Keperluan</Label>
-            <Textarea v-model="cuti_desc" placeholder="Keperluan Lembur" />
+            <Textarea v-model="desc" placeholder="Keperluan Lembur" />
         </div>
         <div class="flex justify-end pt-2 space-x-2">
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
-            <Button type="submit" class="bg-amber hover:bg-amber-300 cursor-pointer font-bold">Ajukan Lembur</Button>
+            <Button type="submit" class="bg-tangerine hover:bg-tangerine-300 cursor-pointer font-bold">Ajukan Lembur</Button>
         </div>
     </form>
 </template>

@@ -22,8 +22,9 @@ import {
 } from '@/components/ui/popover'
 import { ref, watch, shallowRef } from 'vue'
 import { Textarea } from '@/components/ui/textarea'
+import { useForm } from '@inertiajs/vue3'
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close','refresh','toast'])
 const defaultPlaceholder = today(getLocalTimeZone())
 const isLinked = ref(true)
 
@@ -52,13 +53,32 @@ const df = new DateFormatter('en-US', {
     dateStyle: 'long',
 })
 
+const form = useForm({
+    type: '',
+    start_date: '',
+    end_date: '',
+    desc: '',
+})
+
+
 const handleSubmit = (e: Event) => {
-    e.preventDefault() // biar gak reload
-    console.log({
-        cuti_type: cuti_type.value,
-        start_date: start_date.value?.toString(),
-        end_date: end_date.value?.toString(),
-        cuti_desc: cuti_desc.value
+    e.preventDefault()
+
+    form.type = cuti_type.value,
+        form.start_date = start_date.value?.toString(),
+        form.end_date = end_date.value?.toString(),
+        form.desc = cuti_desc.value
+
+    form.post(route('request-permission.create'), {
+        forceFormData: true,
+        onSuccess: () => {
+            emit('close')
+            emit('refresh')
+            emit('toast', 'success', 'Berhasil mengajukan izin')
+        },
+        onError: (errors) => {
+            console.log('Ada error validasi ❌', errors)
+        },
     })
 }
 </script>
@@ -139,7 +159,7 @@ const handleSubmit = (e: Event) => {
         <div class="flex justify-end pt-2 space-x-2">
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
-            <Button type="submit" class="bg-amber hover:bg-amber-300 cursor-pointer font-bold">Ajukan izin</Button>
+            <Button type="submit" class="bg-rose hover:bg-rose-300 cursor-pointer font-bold">Ajukan izin</Button>
         </div>
     </form>
 </template>

@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserStatus;
 use Illuminate\Http\Request;
 
 class UserStatusController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getStatus(Request $request)
     {
-        //
+        $user = $request->user();
+        $status = UserStatus::where('user_id', $user->id)->first();
+        return response()->json([
+            'status' => $status,
+        ]);
     }
 
     /**

@@ -1,19 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Attendance extends Model
+class AttendanceHistory extends Model
 {
-
     protected $guarded = [];
-    // protected $fillable = [
-    //     'user_id',
-    //     'date',
-    //     'clock_in',
-    //     'clock_out',
-    //     'status',
-    // ];
 
     public function user()
     {

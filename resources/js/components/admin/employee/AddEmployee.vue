@@ -6,29 +6,17 @@ import Input from '@/components/ui/input/Input.vue'
 import { useForm, useField } from 'vee-validate'
 import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
-import { useForm as useAPI } from '@inertiajs/vue3'
-// import { computed, onBeforeUnmount } from 'vue'
+import { useForm as useAPI, usePage } from '@inertiajs/vue3'
 
-// const previewUrl = computed(() => {
-//   if (!photo.value || !(photo.value instanceof File)) {
-//     return undefined
-//   }
-//   return URL.createObjectURL(photo.value)
-// })
 
-// // optional cleanup (penting!)
-// onBeforeUnmount(() => {
-//   if (previewUrl.value) {
-//     URL.revokeObjectURL(previewUrl.value)
-//   }
-// })
-
-const emit = defineEmits(['close'])
+const page = usePage()
+const emit = defineEmits(['close', 'refresh', 'toast'])
 
 const schema = toTypedSchema(
     z.object({
         name: z.string().min(1, 'Nama wajib diisi'),
-        email: z.email('Email tidak valid'),
+        jabatan: z.string().min(1, 'Jabatan wajib diisi'),
+        email: z.string().email('Email tidak valid'),
         password: z.string().min(8, 'Minimal 8 karakter'),
         photo: z
             .instanceof(File, { message: 'Foto wajib diupload' })
@@ -49,12 +37,14 @@ const { handleSubmit } = useForm({
     initialValues: {
         name: '',
         email: '',
-        password: ''
+        password: '',
+        jabatan: ''
     }
 })
 
 // 3️⃣ Fields
 const { value: name, errorMessage: nameError } = useField<string>('name')
+const { value: jabatan, errorMessage: jabatanError } = useField<string>('jabatan')
 const { value: email, errorMessage: emailError } = useField<string>('email')
 const { value: password, errorMessage: passwordError } = useField<string>('password')
 const { value: photo, errorMessage: photoError } = useField<File>('photo')
@@ -62,6 +52,7 @@ const { value: photo, errorMessage: photoError } = useField<File>('photo')
 // 4️⃣ Submit
 const form = useAPI({
     name: '',
+    jabatan: '',
     email: '',
     password: '',
     photo: undefined
@@ -71,7 +62,17 @@ const onSubmit = handleSubmit((values) => {
     Object.assign(form, values)
 
     form.post(route('admin.employee.create'), {
-        forceFormData: true
+        forceFormData: true,
+        onSuccess: () => {
+
+            console.log('data:', page.props.flash.data)
+
+            emit('close')
+            emit('toast', 'success', 'Berhasil menambahkan karyawan')
+        },
+        onError: (errors) => {
+            console.log('Ada error validasi ❌', errors)
+        },
     })
 })
 
@@ -86,19 +87,35 @@ const onFileChange = (e: Event) => {
 }
 
 const generatePassword = (length = 8) => {
-  const chars = 'abcdefghijklmnopqrstuvwxyz123456789'
-  let password = ''
+    const chars = 'abcdefghijklmnopqrstuvwxyz123456789'
+    let password = ''
 
-  for (let i = 0; i < length; i++) {
-    password += chars[Math.floor(Math.random() * chars.length)]
-  }
+    for (let i = 0; i < length; i++) {
+        password += chars[Math.floor(Math.random() * chars.length)]
+    }
 
-  return password
+    return password
 }
 
 const onGeneratePassword = () => {
-  password.value = generatePassword(8)
+    password.value = generatePassword(8)
 }
+
+// import { computed, onBeforeUnmount } from 'vue'
+
+// const previewUrl = computed(() => {
+//   if (!photo.value || !(photo.value instanceof File)) {
+//     return undefined
+//   }
+//   return URL.createObjectURL(photo.value)
+// })
+
+// // optional cleanup (penting!)
+// onBeforeUnmount(() => {
+//   if (previewUrl.value) {
+//     URL.revokeObjectURL(previewUrl.value)
+//   }
+// })
 </script>
 
 <template>
@@ -107,6 +124,11 @@ const onGeneratePassword = () => {
             <Label>Nama</Label>
             <Input v-model="name" placeholder="Nama Karyawan" />
             <p class="text-coral text-xs/2 ml-1">{{ nameError }}</p>
+        </div>
+        <div class="grid gap-1.5">
+            <Label>Jabatan</Label>
+            <Input v-model="jabatan" placeholder="Jabatan Karyawan" />
+            <p class="text-coral text-xs/2 ml-1">{{ jabatanError }}</p>
         </div>
         <div class="flex justify-between">
             <div class="grid gap-1.5 flex-1">
@@ -124,15 +146,17 @@ const onGeneratePassword = () => {
         <div class="grid gap-1.5">
             <Label>Password</Label>
             <div class="flex space-x-3">
-            <Input v-model="password" placeholder="Password Karyawan" />
-            <Button type="button" variant="outline" class="cursor-pointer bg-abyss text-white " @click="onGeneratePassword">Generate</Button>
+                <Input v-model="password" placeholder="Password Karyawan" />
+                <Button type="button" variant="outline" class="cursor-pointer bg-abyss text-white "
+                    @click="onGeneratePassword">Generate</Button>
             </div>
             <p class="text-coral text-xs/2 ml-1">{{ passwordError }}</p>
         </div>
         <div class="flex justify-end pt-2 space-x-2">
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
-            <Button :loading="form.processing" type="submit" variant="outline" class="bg-abyss cursor-pointer font-bold text-white">Tambah Karyawan</Button>
+            <Button :loading="form.processing" type="submit" variant="outline"
+                class="bg-abyss cursor-pointer font-bold text-white">Tambah Karyawan</Button>
         </div>
     </form>
 </template>

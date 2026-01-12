@@ -13,8 +13,9 @@ import {
 import { ref, watch, shallowRef } from 'vue'
 import { Textarea } from '@/components/ui/textarea'
 import Input from '@/components/ui/input/Input.vue'
+import { useForm } from '@inertiajs/vue3'
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close','refresh','toast'])
 const defaultPlaceholder = today(getLocalTimeZone())
 const isLinked = ref(true)
 
@@ -43,15 +44,44 @@ const df = new DateFormatter('en-US', {
     dateStyle: 'long',
 })
 
+const form = useForm({
+    purpose: '',
+    start_date: '',
+    end_date: '',
+    desc: '',
+})
+
+
 const handleSubmit = (e: Event) => {
-    e.preventDefault() // biar gak reload
-    console.log({
-        cuti_type: tujuan.value,
-        start_date: start_date.value?.toString(),
-        end_date: end_date.value?.toString(),
-        cuti_desc: cuti_desc.value
+    e.preventDefault()
+
+    form.purpose = tujuan.value,
+        form.start_date = start_date.value?.toString(),
+        form.end_date = end_date.value?.toString(),
+        form.desc = cuti_desc.value
+
+    form.post(route('request-duty.create'), {
+        forceFormData: true,
+        onSuccess: () => {
+            emit('close')
+            emit('refresh')
+            emit('toast', 'success', 'Berhasil mengajukan izin dinas luar')
+        },
+        onError: (errors) => {
+            console.log('Ada error validasi ❌', errors)
+        },
     })
 }
+
+// const handleSubmit = (e: Event) => {
+//     e.preventDefault() // biar gak reload
+//     console.log({
+//         cuti_type: tujuan.value,
+//         start_date: start_date.value?.toString(),
+//         end_date: end_date.value?.toString(),
+//         cuti_desc: cuti_desc.value
+//     })
+// }
 </script>
 
 <template>
@@ -103,7 +133,8 @@ const handleSubmit = (e: Event) => {
         <div class="flex justify-end pt-2 space-x-2">
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
-            <Button type="submit" class="bg-amber hover:bg-amber-300 cursor-pointer font-bold">Ajukan Dinas Luar</Button>
+            <Button type="submit" class="bg-ocean hover:bg-ocean-300 cursor-pointer font-bold">Ajukan Dinas
+                Luar</Button>
         </div>
     </form>
 </template>

@@ -8,7 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable 
+class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -18,11 +18,17 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $guarded = [];
+
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'password',
+    //     'type',
+    //     'photo',
+    //     'storage_id',
+    //     'jabatan'
+    // ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,5 +51,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    public function status()
+    {
+        return $this->hasOne(UserStatus::class);
+    }
+
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function attendance_history()
+    {
+        return $this->hasMany(AttendanceHistory::class);
     }
 }

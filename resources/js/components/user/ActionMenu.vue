@@ -18,6 +18,10 @@ import { Building, CalendarPlus, ClockArrowUp, Info, Megaphone, NotebookText } f
 import ActionCuti from './actiton/ActionCuti.vue';
 import ActionDinasLuar from './actiton/ActionDinasLuar.vue';
 import ActionLembur from './actiton/ActionLembur.vue';
+const emit = defineEmits(['close','refresh','toast'])
+function callToast(type: "success" | "error" | "info" | "warning", message: string) {
+    emit('toast', type , message)
+}
 
 const menus = [
     {
@@ -102,7 +106,7 @@ const activeMenu = ref(null) as any
                     {{ activeMenu.dialog.description }}
                 </DialogDescription>
             </DialogHeader>
-            <component :is="activeMenu.action" @close="activeMenu = null"/>
+            <component :is="activeMenu.action" @close="activeMenu = null" @refresh="emit('refresh')" @toast="callToast"/>
         </DialogContent>
     </Dialog>
 </template>

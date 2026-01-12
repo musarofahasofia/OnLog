@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '../layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue'
 import { usePage, Link, router } from '@inertiajs/vue3';
 import type { SharedData, User } from '@/types'; // misalnya kamu simpan di file terpisah
@@ -30,35 +30,49 @@ import {
 import { Button } from "@/components/ui/button"
 import simplebar from 'simplebar-vue';
 import { CalendarPlus, EllipsisVertical, InfoIcon, OctagonAlert } from 'lucide-vue-next';
+import UserAttendance from '@/components/user/UserAttendance.vue';
+import { useToast } from "vue-toastification";
+import { useAttendance } from '@/composables/useAttendance'
+import { useStatus } from '@/composables/useStatus';
 
-const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
+const { badges, fetchStatus } = useStatus()
+const { fetchHistory } = useAttendance()
+onMounted(fetchStatus)
+const toast = useToast();
 const page = usePage<SharedData>();
-const attendanceToday = computed(() => page.props.attendanceToday);
-const summary = computed(() => page.props.summary);
-const todayDate = page.props.todayDate;
-const user = page.props.auth.user as User
-const clientIp = page.props.userIp;
-const allowedIps = page.props.allowed_ips;
-console.log(page.props, 'attendanceToday')
+const { userIp: clientIp, allowed_ips, todayDate, attendanceToday, summary, history } =
+    defineProps<{
+        userIp: string
+        allowed_ips: { ip_address: string }[]
+        todayDate: string
+        attendanceToday: {
+            clock_in: string | null
+            clock_out: string | null
+            status: string | null
+        } | null
+        summary: {
+            presence: number
+            late: number
+        }
+        history: Record<string, any[]>
+    }>()
 
-const now = ref('')
 
-function updateDateTime() {
-    const waktu = new Date()
-    const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+const firstHistoryEntry = computed(() => {
+    const entry = Object.entries(history)[0]
+
+    if (!entry) return null
+
+    const [dateLabel, items] = entry
+
+    return {
+        dateLabel,
+        items,
+        isToday: dateLabel === todayDate,
     }
-
-    now.value = new Intl.DateTimeFormat('id-ID', options).format(waktu)
-}
-
-onMounted(() => {
-    updateDateTime()
-    setInterval(updateDateTime, 1000) // Update tiap detik
 })
+
+console.log(firstHistoryEntry.value?.dateLabel)
 
 function normalizeIp(ip: string): string {
     return ip
@@ -69,17 +83,57 @@ function normalizeIp(ip: string): string {
 
 const isOnOfficeNetwork = computed(() => {
     const normalizedClientIp = normalizeIp(clientIp);
-    return allowedIps.some((ipObj: any) => normalizedClientIp.startsWith(normalizeIp(ipObj.ip_address)));
+    return allowed_ips.some((ipObj: any) => normalizedClientIp.startsWith(normalizeIp(ipObj.ip_address)));
 });
 
-const absen = (type: 'masuk' | 'pulang') => {
-    router.post('/absen', { type }, {
+const formatTime = (date: string) => {
+    return new Date(date).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+}
+
+const ButtonLoading = ref(false)
+
+const form = useForm({
+    client_ip: '',
+})
+
+const attend = async (type: 'in' | 'out') => {
+    form.client_ip = clientIp
+
+    form.post(route('attend', { action: type }), {
         preserveScroll: true,
-        onSuccess: () => {
-            router.reload({ only: ['attendanceToday', 'summary'] })
+        onStart: () => {
+            ButtonLoading.value = true
+        },
+        onSuccess: async () => {
+            let ket = type == 'in' ? 'Berhasil Absen Masuk' : 'Berhasil Absem Pulang'
+            await fetchStatus()
+            await fetchHistory()
+            toast.success(ket)
         },
         onError: (err) => console.error('Absen gagal', err),
+        onFinish: () => {
+            ButtonLoading.value = false
+        }
     })
+}
+
+async function refreshPage() {
+    await fetchStatus()
+    await fetchHistory()
+}
+
+function callToast(type: "success" | "error" | "info" | "warning", message: string) {
+    const toastMap = {
+        success: toast.success,
+        error: toast.error,
+        info: toast.info,
+        warning: toast.warning,
+    };
+
+    toastMap[type]?.(message);
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -112,7 +166,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                             <div class="flex gap-2 items-center">
                                                 <p class="font-mono text-base">{{ clientIp }}</p>
                                                 <Tooltip>
-                                                    <TooltipTrigger>
+                                                    <TooltipTrigger v-if="!isOnOfficeNetwork">
                                                         <OctagonAlert class="text-coral p-0" :size="20" />
                                                     </TooltipTrigger>
                                                     <TooltipContent>
@@ -132,44 +186,56 @@ const breadcrumbs: BreadcrumbItem[] = [
                                         <div class="flex justify-between items-center">
                                             <p class="mb-0.5">Absen</p>
                                             <div class="flex gap-2 items-center">
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <OctagonAlert class="text-coral p-0" :size="20" />
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
-                                                            kantor!
-                                                        </p>
-                                                    </TooltipContent>
-                                                </Tooltip>
+                                                <template v-if="!isOnOfficeNetwork">
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            <OctagonAlert class="text-coral p-0" :size="20" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p class="text-coral dark:drop-shadow-lg">Jaringan di luar
+                                                                kantor!
+                                                            </p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </template>
+                                                <template v-else>
+                                                    <p class="text-success-fg text-xs">Dalam Jaringan Kantor!
+                                                    </p>
+                                                </template>
                                             </div>
                                         </div>
                                     </CardTitle>
                                     <CardContent class="px-0">
-                                        <div class="flex justify-between items-center">
-                                            <Button variant="outline"
-                                                class="text-foreground bg-muted max-w-[140px] flex-1 px-2"
-                                                disabled>Absen
-                                                Masuk</Button>
-                                            <EllipsisVertical />
-                                            <Button variant="outline"
-                                                class="text-foreground bg-muted max-w-[140px] flex-1 px-2"
-                                                disabled>Absen
-                                                Pulang</Button>
-                                        </div>
-                                        <!-- <div class="flex justify-between items-center">
-                                    <Button variant="outline"
-                                        class="text-neon-fg max-w-[140px] flex-1 px-2 hover:bg-neon-bg cursor-pointer hover:text-neon-fg">Absen
-                                        Masuk</Button>
-                                    <EllipsisVertical />
-                                    <Button variant="outline"
-                                        class="text-crimson-fg max-w-[140px] flex-1 px-2 hover:bg-crimson-bg cursor-pointer hover:text-crimson-fg">Absen
-                                        Pulang</Button>
-                                </div> -->
+                                        <template v-if="isOnOfficeNetwork">
+                                            <div class="flex justify-between items-center">
+                                                <Button variant="outline" :loading="ButtonLoading" @click="attend('in')"
+                                                    :disabled="attendanceToday?.clock_in"
+                                                    class="shadow-sm max-w-[140px] flex-1 px-0 text-success-fg hover:text-success-fg">{{
+                                                        attendanceToday?.clock_in ?? 'Absen Masuk' }}</Button>
+                                                <EllipsisVertical />
+                                                <Button variant="outline" :loading="ButtonLoading"
+                                                    @click="attend('out')" :disabled="attendanceToday?.clock_out"
+                                                    class="shadow-sm max-w-[140px] flex-1 px-0 text-danger-fg hover:text-danger-fg">{{
+                                                        attendanceToday?.clock_out ?? 'Absen Pulang' }}</Button>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="flex justify-between items-center">
+                                                <Button variant="outline"
+                                                    class="text-foreground bg-muted max-w-[140px] flex-1 px-0"
+                                                    disabled>Absen
+                                                    Masuk</Button>
+                                                <EllipsisVertical />
+                                                <Button variant="outline"
+                                                    class="text-foreground bg-muted max-w-[140px] flex-1 px-0"
+                                                    disabled>Absen
+                                                    Pulang</Button>
+                                            </div>
+                                        </template>
                                     </CardContent>
                                 </CardHeader>
                             </Card>
-                            <ActionMenu />
+                            <ActionMenu @toast="callToast" @refresh="refreshPage" />
                         </div>
                         <div class="w-full sm:w-1/2 md:w-full lg:w-1/2 flex flex-col gap-3">
                             <Card class="py-2 gap-1">
@@ -186,14 +252,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <CardContent class="grid grid-cols-2 gap-1.5 text-xs px-6">
                                     <Card class="py-2">
                                         <CardContent class="px-4">
-                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p class=" text-3xl font-bold">{{ summary.presence }}<span></span></p>
                                             <p>Total Masuk</p>
                                         </CardContent>
                                     </Card>
                                     <Card class="py-2">
                                         <CardContent class="px-4">
                                             <div class="flex items-end space-x-1">
-                                                <p class=" text-3xl font-bold">23<span></span></p>
+                                                <p class=" text-3xl font-bold">0<span></span></p>
                                                 <Tooltip>
                                                     <TooltipTrigger>
                                                         <InfoIcon class="text-muted-foreground p-0 mb-1.5" :size="16" />
@@ -210,13 +276,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     </Card>
                                     <Card class="py-2">
                                         <CardContent class="px-4">
-                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p class=" text-3xl font-bold">6<span></span></p>
                                             <p class="text-nowrap">Sisa Cuti Tahunan</p>
                                         </CardContent>
                                     </Card>
                                     <Card class="py-2">
                                         <CardContent class="px-4">
-                                            <p class=" text-3xl font-bold">23<span></span></p>
+                                            <p class=" text-3xl font-bold">{{ summary.late }}<span></span></p>
                                             <p>Terlambat</p>
                                         </CardContent>
                                     </Card>
@@ -227,77 +293,37 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     <CardTitle>
                                         <div class="flex justify-between items-center">
                                             <p>Status Hari Ini</p>
-                                            <p
-                                                class="font-normal text-tangerine bg-tangerine/8 text-sm px-2 py-0.5 rounded">
-                                                Dinas Luar</p>
+                                            <div class="flex space-x-1">
+                                                <p v-for="(badge, index) in badges" :key="index"
+                                                    class="font-normal text-sm px-3 py-0.5 rounded-lg"
+                                                    :class="badge.class">
+                                                    {{ badge.label }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </CardTitle>
                                 </CardHeader>
-                                <div class="min-h-0 flex-1 flex flex-col px-6 gap-1.5 text-xs ">
-                                    <p>{{ now }}</p>
-                                    <simplebar data-simplebar-auto-hide="true"
-                                        class="min-h-0 flex flex-col flex-1">
+                                <div class="min-h-0 flex-1 flex flex-col px-6 gap-1.5 text-xs "
+                                    v-if="firstHistoryEntry">
+                                    <p>{{ firstHistoryEntry.dateLabel }}</p>
+                                    <simplebar data-simplebar-auto-hide="true" class="min-h-0 flex flex-col flex-1">
                                         <div class="flex flex-col gap-1.5">
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
+                                            <div v-if="firstHistoryEntry.isToday"
+                                                v-for="(item, index) in firstHistoryEntry.items" :key="item.id"
+                                                class="flex gap-3">
+                                                <p class="p-0.5 rounded-4xl rounded-l-none"
+                                                    :class="index % 2 === 0 ? 'bg-amber' : 'bg-rose'">
+                                                </p>
+                                                <p class="py-0.5 min-w-[30px]">{{ formatTime(item.created_at) }}</p>
                                                 <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
+                                                <p class="py-0.5">{{ item.description }}</p>
                                             </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">09:20</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
-                                            <div class="flex gap-3">
-                                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                                <p class="py-0.5">08:00</p>
-                                                <p class="py-0.5">:</p>
-                                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                            </div>
+                                            <template v-else>
+                                                <p class="text-center py-2">Belum ada keterangan hari ini</p>
+                                            </template>
                                         </div>
                                     </simplebar>
                                 </div>
-
-
-
                             </Card>
                         </div>
 
@@ -306,88 +332,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
             <div
                 class="hidden xl:flex max-w-80 bg-sand/30 flex-col flex-1 rounded-l-2xl shadow-md min-w-0 pl-10 pr-5 pt-8 gap-6">
-                <div class="flex justify-between">
-                    <p class="text-lg font-extrabold">Calendar</p>
-                </div>
-                <simplebar data-simplebar-auto-hide="true" class="flex overflow-y-auto min-h pr-1 mb-3">
-                    <div class="flex flex-col gap-6">
-                        <div class="flex flex-col gap-3 lg:text-sm text-xs ">
-                            <p class="font-bold">{{ now }}</p>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">08:00</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">09:20</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 text-sm">
-                            <p class="font-bold">{{ now }}</p>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">08:00</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">09:20</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 text-sm">
-                            <p class="font-bold">{{ now }}</p>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">08:00</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">09:20</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 text-sm">
-                            <p class="font-bold">{{ now }}</p>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">08:00</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">09:20</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 text-sm">
-                            <p class="font-bold">{{ now }}</p>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">08:00</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                <p class="py-0.5">09:20</p>
-                                <p class="py-0.5">:</p>
-                                <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                            </div>
-                        </div>
-                    </div>
-                </simplebar>
+                <UserAttendance />
             </div>
         </div>
 

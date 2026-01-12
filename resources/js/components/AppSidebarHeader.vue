@@ -14,6 +14,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import UserAttendance from './user/UserAttendance.vue';
 
 const headerRef = ref(null)
 const isCalendar = ref(false)
@@ -94,7 +95,7 @@ const tabs = [
                         <component :is="Icon" class="-ml-1 h-4 w-4" />
                     </button>
                 </div>
-                <button v-if="route().current('dashboard')" class="xl:hidden ml-2 bg-sand p-1 rounded-lg text-background shadow-lg"
+                <button v-if="route().current('dashboard')" class="xl:hidden ml-2 bg-sand p-1 rounded-lg text-foreground shadow-lg"
                     @click="toggleCalendar">
                     <CalendarFold />
                 </button>
@@ -106,52 +107,7 @@ const tabs = [
                         </SheetHeader>
                         <div
                             class="flex bg-sand/30 flex-col flex-1 shadow-md min-w-0 pl-10 pr-5 pt-8 gap-6">
-                            <div class="flex justify-between">
-                                <p class="text-lg font-extrabold">Calendar</p>
-                            </div>
-                            <simplebar data-simplebar-auto-hide="true" class="flex overflow-y-auto min-h pr-1 mb-3">
-                                <div class="flex flex-col gap-6">
-                                    <div class="flex flex-col gap-3 lg:text-sm text-xs">
-                                        <p class="font-bold">{{ now }}</p>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-amber rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">08:00</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar dsafa dafsasd dasf as</p>
-                                        </div>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">09:20</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                        </div>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">09:20</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                        </div>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">09:20</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                        </div>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">09:20</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                        </div>
-                                        <div class="flex gap-3">
-                                            <p class="p-0.5 bg-rose rounded-4xl rounded-l-none"></p>
-                                            <p class="py-0.5">09:20</p>
-                                            <p class="py-0.5">:</p>
-                                            <p class="py-0.5">Pengajuan dinas luar diterima</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </simplebar>
+                            <UserAttendance/>
                         </div>
                     </SheetContent>
                 </Sheet>
