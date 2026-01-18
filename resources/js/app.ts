@@ -36,11 +36,18 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(Toast, options)
-            .use(plugin)
-            .use(ZiggyVue)
-            .mount(el);
+        const vueApp = createApp({ render: () => h(App, props) });
+
+        vueApp.use(Toast, options);
+        vueApp.use(plugin);
+        vueApp.use(ZiggyVue);
+
+        // 🔥 INIT TOAST SETELAH plugin di-register
+        import('./services/ToastService').then(({ initToast }) => {
+            initToast();
+        });
+
+        vueApp.mount(el);
     },
     progress: {
         color: '#4B5563',

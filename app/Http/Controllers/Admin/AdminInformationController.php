@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Information;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AdminInformationController extends Controller
 {
@@ -13,15 +14,41 @@ class AdminInformationController extends Controller
      */
     public function index()
     {
-        return Inertia::render('admin/Information');
+        $information = Information::get();
+
+        return Inertia::render('admin/Information', [
+            'information' => $information
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        try {
+
+            Information::create([
+                'title'    => $request->title,
+                'type'     => $request->type,
+                'end_date' => $request->end_date,
+                'content'  => $request->content,
+                'status'   => 'aktif'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::warning('Attend warning: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        } catch (\Throwable $th) {
+            Log::error('Attend error: ' . $th->getMessage(), ['trace' => $th->getTraceAsString()]);
+
+            return response()->json([
+                'message' => 'Terjadi kesalahan pada server.',
+            ], 500);
+        }
     }
 
     /**

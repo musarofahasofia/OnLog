@@ -14,6 +14,12 @@ import {
     AvatarFallback,
     AvatarImage,
 } from '@/components/ui/avatar'
+import { useStatus } from '@/composables/useStatus';
+const { getBadgeStyles } = useStatus()
+const props = defineProps<{
+    data: Record<string, any>
+}>()
+
 const invoices = [
     {
         invoice: 'INV001',
@@ -70,27 +76,34 @@ const invoices = [
                     </TableHead>
                     <TableHead>Jabatan</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead class="text-right">
+                    <!-- <TableHead class="text-right">
                         Total
-                    </TableHead>
+                    </TableHead> -->
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-for="invoice in invoices" :key="invoice.invoice">
+                <TableRow v-for="user in props.data" :key="user.id">
                     <TableCell class="font-medium">
                         <div class="flex space-x-2 items-center">
                             <Avatar class="size-7">
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                <AvatarImage :src="user.photo ?? ''" alt="@shadcn" class="object-cover object-center w-full h-full" />
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
-                            <p>{{ invoice.invoice }}</p>
+                            <p>{{ user.name }}</p>
                         </div>
                     </TableCell>
-                    <TableCell>{{ invoice.paymentStatus }}</TableCell>
-                    <TableCell>{{ invoice.paymentMethod }}</TableCell>
-                    <TableCell class="text-right">
-                        {{ invoice.totalAmount }}
+                    <TableCell>{{ user.jabatan }}</TableCell>
+                    <TableCell>
+                        <div class="flex">
+                            <p v-for="badge in getBadgeStyles(user.status.status)"
+                                class="font-normal text-sm px-3 py-0.5 rounded-lg" :class="badge.class">
+                                {{ badge.label }}
+                            </p>
+                        </div>
                     </TableCell>
+                    <!-- <TableCell class="text-right">
+                        {{ user.totalAmount }}
+                    </TableCell> -->
                 </TableRow>
             </TableBody>
         </Table>

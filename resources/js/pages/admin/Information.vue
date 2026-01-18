@@ -2,6 +2,20 @@
 import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import TableInformation from '@/components/admin/information/TableInformation.vue';
+import { router } from '@inertiajs/vue3';
+
+const { information } = defineProps<{
+  information: any
+}>()
+
+function refreshPage() {
+  router.visit(window.location.href, {
+    preserveState: false,
+    preserveScroll: true,
+    only: ['information'],
+  })
+}
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,7 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             @[1007px]:h-[calc(100vh-var(--header-h)-17px)]
         ">
                 <div class="flex flex-col py-3 px-8 flex-1 overflow-x-auto">
-                    <TableInformation />
+                    <TableInformation :information="information" @refresh="refreshPage" />
                 </div>
             </div>
         </div>

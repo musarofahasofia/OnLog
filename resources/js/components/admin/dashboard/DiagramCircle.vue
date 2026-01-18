@@ -20,17 +20,35 @@ import {
     ChartTooltipContent,
     componentToString,
 } from "@/components/ui/chart"
+const today = computed(() => {
+  const now = new Date()
 
+  return new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(now)
+})
+
+
+const props = defineProps<{
+  summary: Record<string, any>
+}>()
+
+console.log(props.summary)
 const description = "A simple pie chart"
-const total_karyawan = ref(20)
+const total_karyawan = computed(() =>
+  Number(props.summary.users)
+)
 
 const chartData = [
-    { type: "masuk", count: 14 },
-    { type: "izin_cuti", count: 2 },
-    { type: "dinas_luar", count: 3 },
-    { type: "lembur", count: 5 },
-    { type: "terlambat", count: 2 },
-    { type: "absen", count: 1 },
+    { type: "masuk", count: props.summary.attendance },
+    { type: "izin_cuti", count: props.summary.permission },
+    { type: "dinas_luar", count: props.summary.duty },
+    { type: "lembur", count: props.summary.overtime },
+    { type: "terlambat", count: props.summary.late },
+    { type: "absen", count: props.summary.absen },
 ]
 type Data = typeof chartData[number]
 
@@ -105,7 +123,7 @@ const legendItems = computed(() => {
     <Card class="flex flex-col gap-4 ">
         <CardHeader class="items-center pb-0 gap-0">
             <CardTitle>Karyawan</CardTitle>
-            <CardDescription>Senin, 19 Januari 2026</CardDescription>
+            <CardDescription>{{ today }}</CardDescription>
         </CardHeader>
         <CardContent class="flex-1 pb-0">
             <ChartContainer :config="chartConfig" class="mx-auto aspect-square max-h-[200px]" :style="{

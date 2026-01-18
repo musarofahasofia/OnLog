@@ -13,14 +13,14 @@ import ListApproval from '@/components/admin/dashboard/ListApproval.vue';
 import Announcement from '@/components/user/Announcement.vue';
 import ListAnnoucement from '@/components/admin/dashboard/ListAnnoucement.vue';
 import ListIp from '@/components/admin/dashboard/ListIp.vue';
-const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
 const page = usePage<SharedData>();
-const attendanceToday = computed(() => page.props.attendanceToday);
-const summary = computed(() => page.props.summary);
-const todayDate = page.props.todayDate;
-const user = page.props.auth.user as User
-const clientIp = page.props.userIp;
-console.log(page.props, 'attendanceToday')
+const { summary, data, information, ips } =
+    defineProps<{
+        summary: Record<string, any[]>,
+        data: Record<string, any[]>,
+        information: Record<string, any[]>
+        ips: Record<string, any[]>
+    }>()
 
 const now = ref('')
 
@@ -98,12 +98,12 @@ const breadcrumbs: BreadcrumbItem[] = [
         ">
                 <div class="flex flex-1 py-6 px-8 space-x-8 min-w-0">
                     <div class="flex flex-col space-y-6">
-                        <DiagramCircle />
-                        <ListIp />
+                        <DiagramCircle :summary="summary" />
+                        <ListIp :ips="ips" />
                     </div>
                     <div class="flex-1 flex flex-col gap-6 min-w-0">
-                        <ListStatus />
-                        <ListAnnoucement />
+                        <ListStatus :summary="summary" :data="data" />
+                        <ListAnnoucement :information="information" />
                     </div>
                 </div>
                 <div

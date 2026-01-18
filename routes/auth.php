@@ -113,11 +113,14 @@ Route::middleware('auth', 'verified', 'user')->group(function () {
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('list/approval', [AdminDashboardController::class, 'approvalList'])->name('list.approval');
+    Route::post('request/approve', [AdminDashboardController::class, 'approveRequest'])->name('request.approve');
 
     Route::get('employee', [AdminEmployeeController::class, 'index'])->name('employee');
     Route::post('employee/create', [AdminEmployeeController::class, 'create'])->name('employee.create');
 
     Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
+    Route::post('informasi/create', [AdminInformationController::class, 'create'])->name('informasi.create');
 
     Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip address');
 

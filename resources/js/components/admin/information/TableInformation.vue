@@ -24,6 +24,7 @@ import AddInformation from './AddInformation.vue'
 import simplebar from 'simplebar-vue'
 
 const addDialog = ref(false)
+const emit = defineEmits(['refresh'])
 
 export interface Information {
     title: string
@@ -32,6 +33,16 @@ export interface Information {
     status: string
     end_date: string
 }
+
+const props = withDefaults(
+    defineProps<{
+        information?: Information[]
+    }>(),
+    {
+        information: () => [],
+    }
+)
+
 
 const data: Information[] = [
   {
@@ -139,8 +150,8 @@ const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 
-const table = useVueTable({
-    data,
+const table = useVueTable<Information>({
+    data: props.information,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -257,7 +268,7 @@ function copy(id: string) {
                         Isi formulir berikut untuk membuat informasi/pengumuman baru
                     </DialogDescription>
                 </DialogHeader>
-                <AddInformation />
+                <AddInformation @refresh="emit('refresh')"/>
             </DialogContent>
         </template>
     </Dialog>

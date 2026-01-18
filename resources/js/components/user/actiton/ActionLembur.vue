@@ -14,6 +14,7 @@ import { ref, watch, shallowRef } from 'vue'
 import { Textarea } from '@/components/ui/textarea'
 import Input from '@/components/ui/input/Input.vue'
 import { useForm } from '@inertiajs/vue3'
+import { toastError, toastSuccess } from '@/services/ToastService'
 
 const emit = defineEmits(['close','refresh','toast'])
 const defaultPlaceholder = today(getLocalTimeZone())
@@ -49,10 +50,10 @@ const handleSubmit = (e: Event) => {
         onSuccess: () => {
             emit('close')
             emit('refresh')
-            emit('toast', 'success', 'Berhasil mengajukan lembur')
+            toastSuccess('Berhasil mengajukan lembur')
         },
         onError: (errors) => {
-            console.log('Ada error validasi ❌', errors)
+            toastError(errors.note)
         },
     })
 }

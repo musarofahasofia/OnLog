@@ -12,7 +12,7 @@ import {
     CardContent,
 } from "@/components/ui/card"
 import { useSidebar } from './ui/sidebar/utils'
-import { computed, onMounted } from 'vue'   
+import { computed, onMounted } from 'vue'
 import { useStatus } from '@/composables/useStatus';
 
 const { badges, fetchStatus } = useStatus()
@@ -20,10 +20,16 @@ defineProps<{
     items: NavItem[];
 }>();
 
-onMounted(fetchStatus)
 const { open } = useSidebar();
 const page = usePage<SharedData>();
 const user = computed(() => page.props.auth.user);
+onMounted(() => {
+  if (user.value?.role === 'user') {
+    fetchStatus()
+  }
+})
+
+
 </script>
 
 <template>
@@ -31,7 +37,7 @@ const user = computed(() => page.props.auth.user);
         <div v-if="open" class="flex flex-col w-full items-center py-8 gap-2">
             <div class="relative inline-block">
                 <Avatar class="size-25">
-                    <AvatarImage :src="user?.photo" class="object-cover object-center w-full h-full" alt="@shadcn" />
+                    <AvatarImage :src="user?.photo ?? ''" class="object-cover object-center w-full h-full" alt="@shadcn" />
                     <AvatarFallback>{{ user?.name?.charAt(0) }}</AvatarFallback>
                 </Avatar>
                 <div class="absolute z-10 bottom-0 left-1/2 -translate-x-1/2 text-center">
@@ -44,7 +50,7 @@ const user = computed(() => page.props.auth.user);
             </div>
             <div class="flex flex-col items-center gap-0.5">
                 <p class="font-bold">{{ user?.name }}</p>
-                <div class="flex space-x-1">
+                <div class="flex space-x-1" v-if="user?.role == 'user'">
                     <p v-for="(badge, index) in badges" :key="index" class="font-normal text-sm px-3 py-0.5 rounded-lg"
                         :class="badge.class">
                         {{ badge.label }}

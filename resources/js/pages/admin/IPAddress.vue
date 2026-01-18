@@ -28,16 +28,16 @@ function deleteIp(id: number) {
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-purple-700">Manajemen IP Kantor</h1>
+                    <h1 class="text-2xl font-bold text-foreground">Manajemen IP Kantor</h1>
                     <p class="text-xs">ip jaringan sekrang: <span class="font-mono">{{ props.office_ip }}</span></p>
                 </div>
                 <modalCreate @close="openToast = true" />
             </div>
 
             <!-- Tabel IP -->
-            <div class="bg-white rounded shadow p-4">
+            <div class="bg-muted rounded shadow p-4">
                 <table class="w-full table-auto">
-                    <thead class="bg-gray-100">
+                    <thead class="bg-muted-foreground">
                         <tr>
                             <th class="p-2 text-left">IP Address</th>
                             <th class="p-2 text-left">Deskripsi</th>

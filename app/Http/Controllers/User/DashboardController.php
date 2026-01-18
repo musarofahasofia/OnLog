@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\AttendanceHistory;
+use App\Models\Information;
 use App\Models\OfficeIp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,8 +20,9 @@ class DashboardController extends Controller
         $user  = $request->user();
         $today = Carbon::today()->toDateString();
 
-        $month = $request->month ?? now()->month;
-        $year  = $request->year ?? now()->year;
+        $month       = $request->month ?? now()->month;
+        $year        = $request->year ?? now()->year;
+        $information = Information::get();
 
         $attendance                   = Attendance::where('user_id', $user->id);
         $todayAttendance              = (clone $attendance)->where('date', $today)->latest()->first();
@@ -48,6 +50,7 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'userIp'          => $request->ip(),
             'allowed_ips'     => $ips,
+            'information'     => $information,
             'todayDate'       => now()->locale('id')->translatedFormat('l, d F Y'),
             'attendanceToday' => $todayAttendance
                 ? [

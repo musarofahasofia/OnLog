@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, markRaw } from 'vue'
+import { ref, computed } from 'vue'
 import {
     Card,
     CardContent,
@@ -14,13 +14,18 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { AlarmClockCheck, Building, CalendarPlus, ClockArrowUp, Info, Megaphone, NotebookText } from "lucide-vue-next";
+import { AlarmClockCheck, Building, CalendarPlus, ClockArrowUp, ClockPlus, Info, LogIn, Megaphone, NotebookText } from "lucide-vue-next";
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from '@/components/ui/avatar'
 import DetailStatus from './DetailStatus.vue';
+const props = defineProps<{
+    summary: Record<string, any>
+    data: Record<string, any>
+}>()
+
 
 const menus = [
     {
@@ -32,7 +37,8 @@ const menus = [
             description: 'List karyawan masuk tepat waktu',
         },
         color: 'bg-forest hover:bg-forest/90',
-        karyawan: 14
+        karyawan: props.summary.attendance,
+        data: props.data.attendance
     },
     {
         id: 1,
@@ -43,7 +49,8 @@ const menus = [
             description: 'List karyawan cuti',
         },
         color: 'bg-rose hover:bg-rose/90',
-        karyawan: 2
+        karyawan: props.summary.permission,
+        data: props.data.permission
     },
     {
         id: 2,
@@ -54,18 +61,20 @@ const menus = [
             description: 'List karyawan dinas luar',
         },
         color: 'bg-ocean hover:bg-ocean/90',
-        karyawan: 3
+        karyawan: props.summary.duty,
+        data: props.data.duty
     },
     {
         id: 3,
         title: 'Lembur',
-        icon: ClockArrowUp,
+        icon: ClockPlus,
         dialog: {
             title: 'Lembur',
             description: 'List karyawan yang mengajukan lembur',
         },
         color: 'bg-tangerine hover:bg-tangerine/90',
-        karyawan: 5
+        karyawan: props.summary.overtime,
+        data: props.data.overtime
     },
     {
         id: 4,
@@ -76,18 +85,20 @@ const menus = [
             description: 'List karyawan yang terlambat',
         },
         color: 'bg-amber hover:bg-amber/90',
-        karyawan: 2
+        karyawan: props.summary.late,
+        data: props.data.late
     },
     {
         id: 4,
         title: 'Absen',
-        icon: ClockArrowUp,
+        icon: LogIn,
         dialog: {
             title: 'Absen',
             description: 'List karyawan tidak ada keterangan',
         },
         color: 'bg-coral hover:bg-coral/90',
-        karyawan: 1
+        karyawan: props.summary.absen,
+        data: props.data.absen
     },
 
     // {
@@ -102,8 +113,38 @@ const menus = [
 ]
 
 // dialog state
+const avatarMap = computed(() => {
+    return menus.map(menu => ({
+        ...menu,
+        avatars: getAvatars(menu.data),
+    }))
+})
 const activeMenu = ref(null) as any
 
+const extractUsers = (data: any[]) => {
+    return data
+        .map(item => item.user ?? item) // kalau ada user ambil user, kalau tidak pakai item
+        .filter((user, index, self) =>
+            self.findIndex(u => u.id === user.id) === index
+        ) // deduplicate user
+}
+
+const getAvatars = (data: any[]) => {
+    const users = extractUsers(data)
+    const total = users.length
+
+    if (total <= 3) {
+        return {
+            items: users,
+            remaining: 0,
+        }
+    }
+
+    return {
+        items: users.slice(0, 2),
+        remaining: total - 2,
+    }
+}
 </script>
 <template>
     <Card class="gap-4 ">
@@ -115,42 +156,44 @@ const activeMenu = ref(null) as any
             </CardTitle>
         </CardHeader>
 
-        <CardContent class="flex flex-col gap-2 px-3 md:px-6 ">
+        <CardContent class="flex flex-col gap-2 px-3 md:px-6">
             <div v-for="menu in menus" :key="menu.id"
                 class="@container px-2 rounded py-1.5 grid grid-cols-3 items-center cursor-pointer hover:bg-muted/50 hover:border-border hover:shadow-md"
                 @click="activeMenu = menu">
-                <!-- Kolom 1: Kiri (ikon + title) -->
+                <!-- Kolom 1 -->
                 <div class="flex items-center gap-4 min-w-0">
                     <div class="p-2 border rounded-lg shrink-0" :class="menu.color">
                         <component :is="menu.icon" :size="20" class="text-white" />
                     </div>
-                    <p class="font-bold text-base shrink-0 " :title="menu.title">
+                    <p class="font-bold text-base shrink-0" :title="menu.title">
                         {{ menu.title }}
                     </p>
                 </div>
 
-                <!-- Kolom 2: Tengah (avatar) -->
+                <!-- Kolom 2: Avatar -->
                 <div class="flex justify-center">
-                    <div
+                    <div v-if="menu.data.length"
                         class="hidden @[469px]:flex -space-x-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:ring-2">
-                        <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                            <AvatarFallback>CN</AvatarFallback>
+                        <Avatar v-for="user in getAvatars(menu.data).items" :key="user.id">
+                            <AvatarImage :src="user.photo ?? ''" :alt="user.name" class="object-cover object-center w-full h-full" />
+                            <AvatarFallback>
+                                {{ user.name.slice(0, 2).toUpperCase() }}
+                            </AvatarFallback>
                         </Avatar>
-                        <Avatar>
-                            <AvatarImage src="https://github.com/leerob.png" alt="@leerob" />
-                            <AvatarFallback>LR</AvatarFallback>
-                        </Avatar>
-                        <Avatar>
-                            <AvatarImage src="" alt="@evilrabbit" />
-                            <AvatarFallback class="text-sm">12+</AvatarFallback>
+
+                        <Avatar v-if="getAvatars(menu.data).remaining > 0">
+                            <AvatarFallback class="text-sm">
+                                +{{ getAvatars(menu.data).remaining }}
+                            </AvatarFallback>
                         </Avatar>
                     </div>
                 </div>
 
-                <!-- Kolom 3: Kanan (kosong atau tombol lain) -->
+                <!-- Kolom 3 -->
                 <div class="flex justify-end text-sm text-muted-foreground items-center">
-                    <p class="truncate"><strong class="mr-0.5">{{ menu.karyawan }}</strong> Karyawan</p>
+                    <p class="truncate">
+                        <strong class="mr-0.5">{{ menu.karyawan }}</strong> Karyawan
+                    </p>
                 </div>
             </div>
         </CardContent>
@@ -166,7 +209,7 @@ const activeMenu = ref(null) as any
                     {{ activeMenu.dialog.description }}
                 </DialogDescription>
             </DialogHeader>
-            <DetailStatus />
+            <DetailStatus :data="extractUsers(activeMenu.data)" />
         </DialogContent>
     </Dialog>
 </template>

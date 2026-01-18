@@ -1,16 +1,17 @@
 <?php
 namespace App\Http\Controllers\User;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\OfficeIp;
-use App\Models\Attendance;
-use App\Models\UserStatus;
-use Illuminate\Http\Request;
-use App\Models\AttendanceHistory;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
+use App\Models\AttendanceHistory;
+use App\Models\OfficeIp;
+use App\Models\User;
+use App\Models\UserStatus;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserAttendanceController extends Controller
 {
@@ -30,15 +31,22 @@ class UserAttendanceController extends Controller
         try {
             $officeIps = OfficeIp::pluck('ip_address')->toArray();
             $clientIp  = $request->client_ip ?? $request->ip();
-            if (! in_array($clientIp, $officeIps)) {
-                throw new \Exception('IP tidak diizinkan');
+
+            $allowed = collect($officeIps)->contains(function ($officeIp) use ($clientIp) {
+                return Str::startsWith($clientIp, $officeIp);
+            });
+
+            if (! $allowed) {
+                return back()->withErrors([
+                    'note' => 'IP Adress tidak dizinkan',
+                ]);
             }
 
             $user_id     = Auth::user()->id;
             $currentTime = Carbon::now();
-            $status      = $currentTime->gt(Carbon::createFromTime(0, 30, 0)) ? 'late' : 'on_time';
+            $status      = $currentTime->gt(Carbon::createFromTime(8, 30, 0)) ? 'late' : 'on_time';
 
-            $ket   = $status == 'late' ? 'Terlambet, a' : 'A';
+            $ket   = $status == 'late' ? 'Terlambat, a' : 'A';
             $where = [
                 'date'    => Carbon::today()->toDateString(),
                 'user_id' => $user_id,
@@ -68,7 +76,7 @@ class UserAttendanceController extends Controller
 
             UserStatus::where('user_id', $user_id)
                 ->update([
-                    'status' => $status == 'late' ? 'Terlambet' : 'Masuk',
+                    'status'   => $status == 'late' ? 'terlambat' : 'masuk',
                     'end_date' => Carbon::today()->toDateString(),
                 ]);
 

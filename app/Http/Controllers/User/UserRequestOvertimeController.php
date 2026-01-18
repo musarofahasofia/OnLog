@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\AttendanceHistory;
 use App\Models\RequestOvertime;
 use App\Models\UserStatus;
@@ -13,46 +14,55 @@ class UserRequestOvertimeController extends Controller
 {
     public function create(Request $request)
     {
-        try {
-            $user        = $request->user();
+        $user  = $request->user();
+        $today = Carbon::today()->toDateString();
 
-            $permission = RequestOvertime::create([
-                'user_id'     => $user->id,
-                'start_at'    => $request->start_at,
-                'end_at'      => $request->end_at,
-                'date'        => $request->date,
-                'status'      => 'pending',
-                'description' => $request->desc,
+        $todayAttendance = Attendance::where('user_id', $user->id)
+            ->where('date', $today)
+            ->latest()
+            ->first();
+
+        if (! $todayAttendance) {
+            return back()->withErrors([
+                'note' => 'Anda belum absen masuk hari ini',
+            ]);
+        }
+
+        try {
+            RequestOvertime::create([
+                'user_id'       => $user->id,
+                'attendance_id' => $todayAttendance->id,
+                'start_at'      => $request->start_at,
+                'end_at'        => $request->end_at,
+                'date'          => $request->date,
+                'status'        => 'pending',
+                'description'   => $request->desc,
             ]);
 
-            $desc = "Mengajukan Lembur";
-
-            $History = AttendanceHistory::create([
+            AttendanceHistory::create([
                 'user_id'     => $user->id,
-                'date'        => Carbon::today()->toDateString(),
+                'date'        => $today,
                 'type'        => 'overtime',
                 'status'      => 'pending',
-                'description' => $desc,
+                'description' => 'Mengajukan Lembur',
             ]);
 
-            UserStatus::where('user_id', $user->id)
-                ->update([
-                    'status'   => 'lembur',
-                    'end_date' => Carbon::today()->toDateString(),
-                ]);
+            UserStatus::where('user_id', $user->id)->update([
+                'status'   => 'lembur',
+                'end_date' => $today,
+            ]);
 
-        } catch (\Exception $e) {
-            Log::warning('Attend warning: ' . $e->getMessage());
+            return back(); // sukses
+        } catch (\Throwable $e) {
+            Log::error('Overtime create failed', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
 
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 422);
-        } catch (\Throwable $th) {
-            Log::error('Attend error: ' . $th->getMessage(), ['trace' => $th->getTraceAsString()]);
-
-            return response()->json([
-                'message' => 'Terjadi kesalahan pada server.',
-            ], 500);
+            return back()->withErrors([
+                'note' => 'Internal server bermasalah, silakan coba lagi.',
+            ]);
         }
     }
 

@@ -26,6 +26,9 @@ import { CalendarIcon } from 'lucide-vue-next'
 import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
+import { useForm as useAPI, usePage } from '@inertiajs/vue3'
+import { toastSuccess } from '@/services/ToastService'
+
 // import { computed, onBeforeUnmount } from 'vue'
 
 // const previewUrl = computed(() => {
@@ -42,7 +45,7 @@ import Textarea from '@/components/ui/textarea/Textarea.vue'
 //   }
 // })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close','refresh'])
 
 const schema = toTypedSchema(
     z.object({
@@ -78,21 +81,48 @@ const { value: type, errorMessage: typeError } = useField<string>('type')
 const { value: content, errorMessage: contentError } = useField<string>('content')
 const { value: endDate, errorMessage: endDateError } = useField<DateValue>('end_date')
 
-// 4️⃣ Submit
-const onSubmit = handleSubmit((values) => {
-    console.log('VALID 🚀', values)
-
-    const formData = new FormData()
-    formData.append('name', values.title)
-    formData.append('email', values.type)
-    formData.append('password', values.content)
-    formData.append(
-        'end_date',
-        values.end_date.toDate(getLocalTimeZone()).toISOString()
-    )
-
-    // axios.post('/api/user', formData)
+const form = useAPI<any>({
+  title: '',
+  type: '',
+  content: '',
+  end_date: '',
 })
+
+const onSubmit = handleSubmit((values) => {
+
+    form.title = title.value
+    form.type = type.value
+    form.content = content.value
+    form.end_date = endDate.value?.toString() ?? null
+
+    form.post(route('admin.informasi.create'), {
+        forceFormData: true,
+        onSuccess: () => {
+            emit('refresh')
+            emit('close')
+            toastSuccess(`Berhasil Menambahkan ${type.value}`)
+        },
+        onError: (errors: any) => {
+            console.log('Ada error validasi ❌', errors)
+        },
+    })
+})
+
+// 4️⃣ Submit
+// const onSubmit = handleSubmit((values) => {
+//     console.log('VALID 🚀', values)
+
+//     const formData = new FormData()
+//     formData.append('name', values.title)
+//     formData.append('email', values.type)
+//     formData.append('password', values.content)
+//     formData.append(
+//         'end_date',
+//         values.end_date.toDate(getLocalTimeZone()).toISOString()
+//     )
+
+//     // axios.post('/api/user', formData)
+// })
 
 </script>
 
@@ -153,14 +183,14 @@ const onSubmit = handleSubmit((values) => {
             </div>
         </div>
         <div class="grid gap-1.5">
-            <Label>Isi informasi</Label>
-            <Textarea v-model="content" placeholder="Masukkan isi informasi"></Textarea>
+            <Label>Konten informasi</Label>
+            <Textarea v-model="content" placeholder="Masukkan isi konten informasi"></Textarea>
             <p class="text-coral text-xs/2 ml-1">{{ contentError }}</p>
         </div>
         <div class="flex justify-end pt-2 space-x-2">
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
-            <Button type="submit" variant="secondary" class="bg-abyss cursor-pointer font-bold text-white">
+            <Button type="submit" variant="secondary" class="bg-abyss cursor-pointer font-bold text-white" :loading="form.processing">
                 Buat Informasi</Button>
         </div>
     </form>

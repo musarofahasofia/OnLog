@@ -7,6 +7,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+
+const props = defineProps<{
+  ips: Record<string, any>
+}>()
+
 </script>
 <template>
         <Card class="gap-4 ">
@@ -19,8 +24,7 @@ import {
         </CardHeader>
 
         <CardContent class="flex flex-col gap-2 px-3 md:px-6 ">
-            <p><span class="font-bold">192.168.</span>xxx.xxx</p>
-            <p><span class="font-bold">12.167.</span>xxx.xxx</p>
+            <p v-for="ip in ips"><span class="font-bold">{{ ip.ip_address }}</span></p>
         </CardContent>
     </Card>
 </template>

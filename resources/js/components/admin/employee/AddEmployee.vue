@@ -67,6 +67,7 @@ const onSubmit = handleSubmit((values) => {
 
             console.log('data:', page.props.flash.data)
 
+            emit('refresh')
             emit('close')
             emit('toast', 'success', 'Berhasil menambahkan karyawan')
         },

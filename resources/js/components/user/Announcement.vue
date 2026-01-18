@@ -16,10 +16,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Info, Megaphone } from "lucide-vue-next";
+import { Info, MailWarning, Megaphone, TriangleAlert, Users } from "lucide-vue-next";
 import { ref } from 'vue'
 import simplebar from 'simplebar-vue';
-
+const props = defineProps<{
+    information: Record<string, any>
+}>()
 const isDialog = ref(false)
 const selectedAnnoucement = ref(null) as any
 function toggleDialog(item: any) {
@@ -27,38 +29,31 @@ function toggleDialog(item: any) {
     isDialog.value = !isDialog.value
 }
 
-const announcements = ref([
-    {
-        id: 1,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Informasi',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-    {
-        id: 2,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Pengumuman',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-    {
-        id: 3,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Informasi',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-
-])
-
 const categoryMap = {
-    Informasi: {
+    informasi: {
         color: 'bg-rose hover:bg-rose/90',
         border: 'border-rose border-t-10',
-        icon: Megaphone,
+        icon: Info,
     },
-    Pengumuman: {
+    pengumuman: {
         color: 'bg-amber hover:bg-amber/90',
         border: 'border-amber border-t-10',
-        icon: Info,
+        icon: Megaphone,
+    },
+    peringatan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: TriangleAlert,
+    },
+    kegiatan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: Users,
+    },
+    kebijakan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: MailWarning,
     },
     default: {
         color: 'bg-slate hover:bg-slate/90',
@@ -73,19 +68,19 @@ const getCategoryConfig = (category: string) => {
 }
 </script>
 <template>
-    <Card v-for="item in announcements" :key="item.id" class="w-70 flex-shrink-0 text-palette-foreground cursor-pointer"
-        :class="getCategoryConfig(item.category).color" @click="toggleDialog(item)">
+    <Card v-for="item in props.information" :key="item.id" class="w-70 flex-shrink-0 text-palette-foreground cursor-pointer"
+        :class="getCategoryConfig(item.type).color" @click="toggleDialog(item)">
         <CardHeader>
             <CardTitle class="line-clamp-2 pb-1">
                 {{ item.title }}
             </CardTitle>
 
             <CardDescription class="-mt-2 text-palette-foreground">
-                {{ item.category }}
+                {{ item.type }}
             </CardDescription>
 
             <CardAction class="self-center px-1">
-                <component :is="getCategoryConfig(item.category).icon" :size="40" />
+                <component :is="getCategoryConfig(item.type).icon" :size="40" />
             </CardAction>
         </CardHeader>
 
@@ -101,7 +96,7 @@ const getCategoryConfig = (category: string) => {
     </Card>
     <Dialog v-model:open="isDialog">
         <template v-if="selectedAnnoucement">
-            <DialogContent :class="getCategoryConfig(selectedAnnoucement.category).border">
+            <DialogContent :class="getCategoryConfig(selectedAnnoucement.type).border">
                 <DialogHeader>
                     <DialogTitle>{{ selectedAnnoucement.title }}</DialogTitle>
                     <DialogDescription>

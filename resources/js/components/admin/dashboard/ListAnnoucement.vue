@@ -14,13 +14,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Building, CalendarPlus, ClockArrowUp, Info, Megaphone, NotebookText } from "lucide-vue-next";
+import { Building, CalendarPlus, ClockArrowUp, Info, MailWarning, Megaphone, NotebookText, TriangleAlert, Users } from "lucide-vue-next";
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from '@/components/ui/avatar'
 import simplebar from 'simplebar-vue'
+const props = defineProps<{
+    information: Record<string, any>
+}>()
 
 const isDialog = ref(false)
 const selectedAnnoucement = ref(null) as any
@@ -93,38 +96,32 @@ const menus = [
 
 // dialog state
 const activeMenu = ref(null) as any
-const announcements = ref([
-    {
-        id: 1,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Informasi',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-    {
-        id: 2,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Pengumuman',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-    {
-        id: 3,
-        title: 'Liburan desember pada tanggal 24 - 28',
-        category: 'Informasi',
-        content: 'Ini kan bakal menjadi liburan yang sangat panjang...',
-    },
-
-])
 
 const categoryMap = {
-    Informasi: {
+    informasi: {
         color: 'bg-rose hover:bg-rose/90',
         border: 'border-rose border-t-10',
-        icon: Megaphone,
+        icon: Info,
     },
-    Pengumuman: {
+    pengumuman: {
         color: 'bg-amber hover:bg-amber/90',
         border: 'border-amber border-t-10',
-        icon: Info,
+        icon: Megaphone,
+    },
+    peringatan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: TriangleAlert,
+    },
+    kegiatan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: Users,
+    },
+    kebijakan: {
+        color: 'bg-amber hover:bg-amber/90',
+        border: 'border-amber border-t-10',
+        icon: MailWarning,
     },
     default: {
         color: 'bg-slate hover:bg-slate/90',
@@ -150,12 +147,12 @@ const getCategoryConfig = (category: string) => {
 
         <simplebar class="flex flex-col overflow-y-auto min-h-0 max-w-full ">
             <CardContent class="flex flex-col gap-2 px-3 md:px-6 text-white">
-                <div v-for="menu in announcements" :key="menu.id" :class="getCategoryConfig(menu.category).color"
+                <div v-for="menu in props.information" :key="menu.id" :class="getCategoryConfig(menu.type).color"
                     class="px-3 rounded-lg py-2 items-start cursor-pointer hover:border-border hover:shadow-md"
                     @click="toggleDialog(menu)">
                     <!-- Kolom 1: Kiri (ikon + title) -->
                     <div class="flex max-w-full items-start gap-4 ">
-                        <component :is="getCategoryConfig(menu.category).icon" :size="45" class="text-white mt-2" />
+                        <component :is="getCategoryConfig(menu.type).icon" :size="45" class="text-white mt-2" />
                         <div class="flex flex-col flex-1">
                             <div class="flex justify-between">
                                 <p class="font-bold text-base truncate" :title="menu.title">
@@ -163,7 +160,7 @@ const getCategoryConfig = (category: string) => {
                                 </p>
                                 <p class="truncate text-sm"> 21 hari</p>
                             </div>
-                            <p class=" text-white/90 text-xs">{{ menu.category }}</p>
+                            <p class=" text-white/90 text-xs">{{ menu.type }}</p>
                             <p class=" text-sm line-clamp-1">{{ menu.content }}</p>
                             <p class=" text-sm text-right underline">→ Lihat Selengkapnya</p>
                         </div>
@@ -175,7 +172,7 @@ const getCategoryConfig = (category: string) => {
 
     <Dialog v-model:open="isDialog">
         <template v-if="selectedAnnoucement">
-            <DialogContent :class="getCategoryConfig(selectedAnnoucement.category).border">
+            <DialogContent :class="getCategoryConfig(selectedAnnoucement.type).border">
                 <DialogHeader>
                     <DialogTitle>{{ selectedAnnoucement.title }}</DialogTitle>
                     <DialogDescription>

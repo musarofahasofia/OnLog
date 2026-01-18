@@ -28,7 +28,9 @@ import {
     AvatarImage,
 } from '@/components/ui/avatar'
 import { User } from '@/types'
+import { useStatus } from '@/composables/useStatus'
 
+const { getBadgeStyles } = useStatus()
 export interface Payment {
     id: string
     amount: number
@@ -48,6 +50,8 @@ function callToast(type: "success" | "error" | "info" | "warning", message: stri
 
     toastMap[type]?.(message);
 }
+
+const emit = defineEmits(['refresh'])
 
 const props = withDefaults(
     defineProps<{
@@ -93,7 +97,8 @@ const columns: ColumnDef<User>[] = [
                     { class: 'size-8' },
                     {
                         default: () => [
-                            h(AvatarImage, { class: "object-cover object-center w-full h-full",
+                            h(AvatarImage, {
+                                class: "object-cover object-center w-full h-full",
                                 src: row.original.photo,
                             }),
                             h(
@@ -122,25 +127,46 @@ const columns: ColumnDef<User>[] = [
     {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.status.status),
+        cell: ({ row }) => {
+            const status = row.original.status?.status
+
+            const badges = getBadgeStyles(status)
+
+            return h(
+                'div',
+                { class: 'flex gap-1' },
+                badges.map(badge =>
+                    h(
+                        'p',
+                        {
+                            class: [
+                                'font-normal text-sm px-3 py-0.5 rounded-lg',
+                                badge.class,
+                            ],
+                        },
+                        badge.label
+                    )
+                )
+            )
+        },
     },
     {
-        accessorKey: 'status',
+        accessorKey: 'jabatan',
         header: 'Jabatan',
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.jabatan),
     },
-    {
-        id: 'actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const payment = row.original
+    // {
+    //     id: 'actions',
+    //     enableHiding: false,
+    //     cell: ({ row }) => {
+    //         const payment = row.original
 
-            return h(ReuseTemplate, {
-                payment,
-                onExpand: row.toggleExpanded,
-            })
-        },
-    },
+    //         return h(ReuseTemplate, {
+    //             payment,
+    //             onExpand: row.toggleExpanded,
+    //         })
+    //     },
+    // },
 ]
 
 const sorting = ref<SortingState>([])
@@ -268,7 +294,7 @@ function copy(id: string) {
                         Isi formulir berikut untuk mendaftarkan karyawan baru.
                     </DialogDescription>
                 </DialogHeader>
-                <AddEmployee @close="addDialog = false" @toast="callToast" />
+                <AddEmployee @close="addDialog = false" @toast="callToast" @refresh="emit('refresh')" />
             </DialogContent>
         </template>
     </Dialog>

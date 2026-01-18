@@ -40,7 +40,7 @@ const { fetchHistory } = useAttendance()
 onMounted(fetchStatus)
 const toast = useToast();
 const page = usePage<SharedData>();
-const { userIp: clientIp, allowed_ips, todayDate, attendanceToday, summary, history } =
+const { userIp: clientIp, allowed_ips, todayDate, attendanceToday, summary, history, information } =
     defineProps<{
         userIp: string
         allowed_ips: { ip_address: string }[]
@@ -54,9 +54,20 @@ const { userIp: clientIp, allowed_ips, todayDate, attendanceToday, summary, hist
             presence: number
             late: number
         }
-        history: Record<string, any[]>
+        history: Record<string, any[]>,
+        information: Record<string, any[]>,
     }>()
 
+const today = computed(() => {
+    const now = new Date()
+
+    return new Intl.DateTimeFormat('id-ID', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    }).format(now)
+})
 
 const firstHistoryEntry = computed(() => {
     const entry = Object.entries(history)[0]
@@ -113,7 +124,7 @@ const attend = async (type: 'in' | 'out') => {
             await fetchHistory()
             toast.success(ket)
         },
-        onError: (err) => console.error('Absen gagal', err),
+        onError: (err) => toast.error(err.note),
         onFinish: () => {
             ButtonLoading.value = false
         }
@@ -152,7 +163,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div class="flex flex-col gap-3 w-full min-w-0 flex-1 overflow-hidden">
                     <simplebar class="max-w-full overflow-x-auto min-w-0">
                         <div class="flex flex-row gap-3  flex-nowrap w-full min-w-0 pb-4 ">
-                            <Announcement />
+                            <Announcement :information="information" />
                         </div>
                     </simplebar>
                     <div
@@ -214,7 +225,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                                                         attendanceToday?.clock_in ?? 'Absen Masuk' }}</Button>
                                                 <EllipsisVertical />
                                                 <Button variant="outline" :loading="ButtonLoading"
-                                                    @click="attend('out')" :disabled="attendanceToday?.clock_out"
+                                                    @click="attend('out')"
+                                                    :disabled="attendanceToday?.clock_out || !attendanceToday?.clock_in"
                                                     class="shadow-sm max-w-[140px] flex-1 px-0 text-danger-fg hover:text-danger-fg">{{
                                                         attendanceToday?.clock_out ?? 'Absen Pulang' }}</Button>
                                             </div>
@@ -244,7 +256,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                         <div class="flex justify-between items-center">
                                             <p>Statistic</p>
                                             <p class="font-normal text-muted-foreground text-sm px-2 rounded">
-                                                Desember 2025
+                                                Januari 2026
                                             </p>
                                         </div>
                                     </CardTitle>
@@ -305,7 +317,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 </CardHeader>
                                 <div class="min-h-0 flex-1 flex flex-col px-6 gap-1.5 text-xs "
                                     v-if="firstHistoryEntry">
-                                    <p>{{ firstHistoryEntry.dateLabel }}</p>
+                                    <p>{{ today }}</p>
                                     <simplebar data-simplebar-auto-hide="true" class="min-h-0 flex flex-col flex-1">
                                         <div class="flex flex-col gap-1.5">
                                             <div v-if="firstHistoryEntry.isToday"
