@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
-use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rules;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SecurePasswordController extends Controller
 {
@@ -36,14 +33,14 @@ class SecurePasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = Auth::user()->id;
+        $user = Auth::user();
 
         $user->update([
             'password' => Hash::make($request->password),
         ]);
 
         $user->status()->update([
-            'status' => 'none',
+            'status'     => 'none',
             'start_date' => now(),
         ]);
 
