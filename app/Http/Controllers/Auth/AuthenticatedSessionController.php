@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if ($user->status?->status === 'new') {
-            return redirect()->route('new-password');
+            return redirect()->route('password.secure');
         }
 
         if ($user->role === 'admin') {
