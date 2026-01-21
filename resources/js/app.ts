@@ -25,7 +25,7 @@ declare module 'vite/client' {
     }
 }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = 'Onlog';
 const options: PluginOptions = {
     position: POSITION.TOP_CENTER,
     timeout: 3500,

@@ -90,6 +90,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AdminAppLayout :breadcrumbs="breadcrumbs">
+        <Head title="Dashboard" />
+
         <div class="@container flex-1 flex">
             <div class="
             flex-1 flex max-w-full w-full justify-between min-h-0 min-w-0
@@ -107,7 +109,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
                 <div
-                    class="hidden h-full @[1017px]:flex max-w-80 bg-sand flex-col flex-1 rounded-l-2xl shadow-md min-w-0 pl-10 pr-3 pt-8 gap-6">
+                    class="hidden h-full @[1017px]:flex max-w-80 bg-sand flex-col flex-1 rounded-l-2xl shadow-md min-w-0 pl-10 pr-3 pt-8 gap-2">
                     <ListApproval />
                 </div>
             </div>

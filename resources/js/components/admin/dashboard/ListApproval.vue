@@ -19,7 +19,8 @@ import { Button } from '@/components/ui/button'
 import { useListApproval } from '@/composables/useListApproval'
 import { useForm } from '@inertiajs/vue3'
 import { toastSuccess } from '@/services/ToastService'
-const { list_approval, fetchListApproval } = useListApproval()
+import { Spinner } from '@/components/ui/spinner'
+const { list_approval,loading, fetchListApproval } = useListApproval()
 const now = ref('')
 
 function updateDateTime() {
@@ -170,8 +171,11 @@ function handleApprove(item: any) {
 </script>
 
 <template>
-    <div class="flex justify-between">
-        <p class="text-lg font-extrabold">Approval</p>
+    <div class="flex justify-between items-center">
+        <p class="text-lg font-extrabold">Perizinan</p>
+        <span v-if="loading" class="inline-flex text-foreground">
+            <Spinner class="animate-spin h-7 w-7" />
+        </span>
     </div>
     <simplebar data-simplebar-auto-hide="true" class="flex overflow-y-auto min-h pr-5 mb-3">
         <div class="flex flex-col gap-6">

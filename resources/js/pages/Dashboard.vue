@@ -157,6 +157,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
+        <Head title="Dashboard" />
+
         <div
             class="flex max-w-full w-full h-full justify-between min-h-0 xl:max-h-[calc(97.8vh-var(--header-h))] overflow-hidden min-w-0">
             <div class="p-3 md:p-6 space-y-6 flex flex-col flex-1 min-w-0 max-w-full overflow-hidden">

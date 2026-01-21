@@ -64,7 +64,7 @@ onMounted(() => {
                 <AvatarFallback>{{ user?.name?.charAt(0) }}</AvatarFallback>
             </Avatar>
         </div>
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>Menu</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton as-child :is-active="item.href === page.url" :tooltip="item.title">

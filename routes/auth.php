@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEmployeeController;
 use App\Http\Controllers\Admin\AdminInformationController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\IpAddressController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -118,6 +119,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->as('admin.')-
 
     Route::get('employee', [AdminEmployeeController::class, 'index'])->name('employee');
     Route::post('employee/create', [AdminEmployeeController::class, 'create'])->name('employee.create');
+
+    Route::get('report', [AdminReportController::class, 'index'])->name('report');
+    Route::get('report/export', [AdminReportController::class, 'exportReport'])->name('report.export');
 
     Route::get('informasi', [AdminInformationController::class, 'index'])->name('informasi');
     Route::post('informasi/create', [AdminInformationController::class, 'create'])->name('informasi.create');

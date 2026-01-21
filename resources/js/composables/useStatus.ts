@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 
 // 1. Definisikan tipe agar lebih aman (Type Safety)
-type StatusKey = 'masuk' | 'none' | 'izin' | 'lembur' | 'dinas_luar' | 'terlambat' | 'new'
+type StatusKey = 'masuk' | 'none' | 'izin' | 'lembur' | 'dinas_luar' | 'terlambat' | 'new' | 'terlambat_lembur'
 
 export type Badge = {
   label: string
@@ -15,11 +15,16 @@ const STATUS_MAP: Record<StatusKey, Badge[]> = {
   none: [{ label: 'Absen', class: 'text-muted-foreground bg-muted' }],
   new: [{ label: 'Absen', class: 'text-muted-foreground bg-muted' }],
   izin: [{ label: 'Izin', class: 'text-rose bg-rose/8' }],
-  lembur: [{ label: 'Lembur', class: 'text-tangerine bg-tangerine/8' }],
+  lembur: [{ label: 'Masuk', class: 'text-forest bg-forest/8' },{ label: 'Lembur', class: 'text-tangerine bg-tangerine/8' }],
   dinas_luar: [{ label: 'Dinas Luar', class: 'text-ocean bg-ocean/8' }],
   terlambat: [
     { label: 'Masuk', class: 'text-forest bg-forest/8' },
     { label: 'Terlambat', class: 'text-amber bg-amber/8' },
+  ],
+  terlambat_lembur: [
+    { label: 'Masuk', class: 'text-forest bg-forest/8' },
+    { label: 'Terlambat', class: 'text-amber bg-amber/8' },
+    { label: 'Lembur', class: 'text-tangerine bg-tangerine/8' }
   ],
 }
 

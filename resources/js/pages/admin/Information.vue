@@ -27,6 +27,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AdminAppLayout :breadcrumbs="breadcrumbs">
+        <Head title="Informasi" />
+
         <div class="@container flex-1 flex ">
             <div class="
             flex-1 flex max-w-full w-full justify-between min-h-0 min-w-0

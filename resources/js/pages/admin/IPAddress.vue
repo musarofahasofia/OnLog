@@ -24,6 +24,8 @@ function deleteIp(id: number) {
 
 <template>
     <AdminAppLayout :breadcrumbs="breadcrumbs">
+        <Head title="IP" />
+
         <div class="p-6 relative">
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">

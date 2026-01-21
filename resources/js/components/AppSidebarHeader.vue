@@ -15,11 +15,16 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import UserAttendance from './user/UserAttendance.vue';
+import ListApproval from './admin/dashboard/ListApproval.vue';
 
 const headerRef = ref(null)
 const isCalendar = ref(false)
+const isDashboard = ref(false)
 function toggleCalendar() {
     isCalendar.value = !isCalendar.value
+}
+function toggleDashboard() {
+    isDashboard.value = !isDashboard.value
 }
 
 const now = ref('')
@@ -65,6 +70,7 @@ withDefaults(defineProps<{
 });
 
 let calender = '/dashboard'
+let dashboard = '/dashboard'
 
 const { appearance, updateAppearance } = useAppearance();
 
@@ -108,6 +114,22 @@ const tabs = [
                         <div
                             class="flex bg-sand/30 flex-col flex-1 shadow-md min-w-0 pl-10 pr-5 pt-8 gap-6">
                             <UserAttendance/>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+                <button v-if="route().current('admin.dashboard')" class="xl:hidden ml-2 bg-sand p-1 rounded-lg text-foreground shadow-lg"
+                    @click="toggleDashboard">
+                    <CalendarFold />
+                </button>
+                <Sheet v-model:open="isDashboard">
+                    <SheetContent class="bg-sidebar text-sidebar-foreground p-0 [&>button]:hidden">
+                        <SheetHeader class="sr-only">
+                            <SheetTitle>Sidebar</SheetTitle>
+                            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+                        </SheetHeader>
+                        <div
+                            class="flex bg-sand/30 flex-col flex-1 shadow-md min-w-0 pl-10 pr-5 pt-8 gap-6">
+                            <ListApproval/>
                         </div>
                     </SheetContent>
                 </Sheet>

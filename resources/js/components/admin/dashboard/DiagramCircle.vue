@@ -36,7 +36,6 @@ const props = defineProps<{
   summary: Record<string, any>
 }>()
 
-console.log(props.summary)
 const description = "A simple pie chart"
 const total_karyawan = computed(() =>
   Number(props.summary.users)

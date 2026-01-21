@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, User, Info, Settings, MapPinned, Users, } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, User, Info, Settings, MapPinned, Users, ChartBar, } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -23,6 +23,11 @@ const mainNavItems: NavItem[] = [
         title: 'Karyawan',
         href: '/admin/employee', // cek route('admin.dashboard') in your routes file
         icon: Users,
+    },
+    {
+        title: 'Laporan',
+        href: '/admin/report', // cek route('admin.dashboard') in your routes file
+        icon: ChartBar,
     },
     {
         title: 'IP Address',
