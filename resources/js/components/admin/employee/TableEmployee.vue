@@ -6,7 +6,7 @@ import {
 } from '@tanstack/vue-table'
 import { h, ref } from 'vue'
 import { createReusableTemplate } from '@vueuse/core'
-import { ArrowUpDown, ChevronDown, MoreHorizontal, MoreVertical, Plus } from 'lucide-vue-next'
+import { ArrowUpDown, ChevronDown, MoreHorizontal, MoreVertical, PenBox, Plus, Trash } from 'lucide-vue-next'
 import { valueUpdater } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -38,7 +38,21 @@ export interface Payment {
     email: string
 }
 const addDialog = ref(false)
+const is_edit = ref(false)
+const data_row = ref<User | null>()
 const toast = useToast();
+
+function onEditClick(row: User) {
+  is_edit.value = true
+  data_row.value = { ...row } // clone biar aman
+  addDialog.value = true
+}
+
+function onCreateClick() {
+  is_edit.value = false
+  data_row.value = null
+  addDialog.value = true
+}
 
 function callToast(type: "success" | "error" | "info" | "warning", message: string) {
     const toastMap = {
@@ -63,9 +77,7 @@ const props = withDefaults(
 )
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
-    payment: {
-        id: string
-    }
+    user: User,
     onExpand: () => void
 }>()
 
@@ -128,7 +140,7 @@ const columns: ColumnDef<User>[] = [
         accessorKey: 'status',
         header: 'Status',
         cell: ({ row }) => {
-            const status = row.original.status?.status
+            const status = row.original.badge_status
 
             const badges = getBadgeStyles(status)
 
@@ -155,18 +167,18 @@ const columns: ColumnDef<User>[] = [
         header: 'Jabatan',
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.jabatan),
     },
-    // {
-    //     id: 'actions',
-    //     enableHiding: false,
-    //     cell: ({ row }) => {
-    //         const payment = row.original
+    {
+        id: 'actions',
+        enableHiding: false,
+        cell: ({ row }) => {
+            const user = row.original
 
-    //         return h(ReuseTemplate, {
-    //             payment,
-    //             onExpand: row.toggleExpanded,
-    //         })
-    //     },
-    // },
+            return h(ReuseTemplate, {
+                user,
+                onExpand: row.toggleExpanded,
+            })
+        },
+    },
 ]
 
 const sorting = ref<SortingState>([])
@@ -203,7 +215,7 @@ function copy(id: string) {
 </script>
 
 <template>
-    <DefineTemplate v-slot="{ payment }">
+    <DefineTemplate v-slot="{ user }">
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
                 <div class="w-full flex-1 flex justify-end">
@@ -215,12 +227,12 @@ function copy(id: string) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem @click="copy(payment.id)">
-                    Copy payment ID
+                <DropdownMenuItem @click="onEditClick(user)">
+                    <PenBox/> Edit
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>View customer</DropdownMenuItem>
-                <DropdownMenuItem>View payment details</DropdownMenuItem>
+                <!-- <DropdownMenuItem @click="" class="text-coral">
+                   <Trash class="text-coral"/> Hapus
+                </DropdownMenuItem> -->
             </DropdownMenuContent>
         </DropdownMenu>
     </DefineTemplate>
@@ -230,7 +242,7 @@ function copy(id: string) {
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
                 @update:model-value=" table.getColumn('email')?.setFilterValue($event)" />
             <div class="flex gap-4">
-                <Button variant="secondary" @click="addDialog = true"
+                <Button variant="secondary" @click="onCreateClick()"
                     class="ml-auto bg-abyss/60 text-white hover:bg-abyss/30 cursor-pointer border ">
                     <Plus />
                     Karyawan
@@ -294,7 +306,7 @@ function copy(id: string) {
                         Isi formulir berikut untuk mendaftarkan karyawan baru.
                     </DialogDescription>
                 </DialogHeader>
-                <AddEmployee @close="addDialog = false" @toast="callToast" @refresh="emit('refresh')" />
+                <AddEmployee @close="addDialog = false" @toast="callToast" @refresh="emit('refresh')" :is_edit="is_edit" :user="data_row" />
             </DialogContent>
         </template>
     </Dialog>

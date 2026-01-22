@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { User, type BreadcrumbItem } from '@/types';
-import { router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { AlarmClockCheck, Building, CalendarIcon, CalendarPlus, Clock, LogIn } from 'lucide-vue-next';
 import { computed, Ref, ref, watch } from 'vue';
 import { useStatus } from '@/composables/useStatus';
@@ -151,7 +151,7 @@ const handleSubmit = async (e: Event) => {
 
     try {
         const startDate = `${dateRange.value.start?.year}-${String(dateRange.value.start?.month).padStart(2, '0')}-${String(dateRange.value.start?.day).padStart(2, '0')}`;
-        const endDate   = `${dateRange.value.end?.year}-${String(dateRange.value.end?.month).padStart(2, '0')}-${String(dateRange.value.end?.day).padStart(2, '0')}`;
+        const endDate = `${dateRange.value.end?.year}-${String(dateRange.value.end?.month).padStart(2, '0')}-${String(dateRange.value.end?.day).padStart(2, '0')}`;
 
         // 2. Request menggunakan Axios
         const response = await axios.get(route('admin.report.export'), {
@@ -195,6 +195,7 @@ const handleSubmit = async (e: Event) => {
 
 <template>
     <AdminAppLayout :breadcrumbs="breadcrumbs">
+
         <Head title="Laporan" />
 
         <div class=" flex-1 flex flex-col gap-4 py-5 px-8">
@@ -227,6 +228,14 @@ const handleSubmit = async (e: Event) => {
                 <div class="rounded-lg w-full overflow-hidden">
                     <Table
                         class="[&>*>*>th]:px-4 [&>*>*>th]:border-0 [&>*>*>td]:px-4 [&>*>tr:hover]:bg-muted [&>tbody>tr:hover]:bg-muted/50">
+                        <colgroup>
+                            <col style="width:40px" />
+                            <col style="width:250px" />
+                            <col style="width:300px" />
+                            <col style="width:120px" />
+                            <col style="width:120px" />
+                            <col />
+                        </colgroup>
                         <TableHeader>
                             <TableRow class="text-white bg-muted">
                                 <TableHead class="w-10">
@@ -234,7 +243,7 @@ const handleSubmit = async (e: Event) => {
                                 <TableHead class="">
                                     Nama
                                 </TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead class="w-[230px]">Status</TableHead>
                                 <TableHead>Masuk</TableHead>
                                 <TableHead>Pulang</TableHead>
                                 <TableHead>
@@ -250,8 +259,8 @@ const handleSubmit = async (e: Event) => {
                                     </div>
                                 </TableCell>
                                 <TableCell>{{ row.user.name }}</TableCell>
-                                <TableCell class="py-1">
-                                    <div class="flex space-x-1">
+                                <TableCell class="py-1 w-[230px]">
+                                    <div class="flex space-x-1 ">
                                         <p v-for="badge in getBadgeStyles(row.badge_status)"
                                             class="font-normal text-sm px-3 py-0.5 rounded-lg " :class="badge.class">
                                             {{ badge.label }}

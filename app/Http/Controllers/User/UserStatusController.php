@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UserStatus;
 use Illuminate\Http\Request;
 
@@ -11,9 +12,9 @@ class UserStatusController extends Controller
     public function getStatus(Request $request)
     {
         $user = $request->user();
-        $status = UserStatus::where('user_id', $user->id)->first();
+        $status = User::findOrFail($user->id);
         return response()->json([
-            'status' => $status,
+            'status' => $status->badge_status,
         ]);
     }
 

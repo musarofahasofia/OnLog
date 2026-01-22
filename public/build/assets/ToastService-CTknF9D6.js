@@ -1,0 +1,1 @@
+import{X as n}from"./app-CVCieWYP.js";let o=null;function c(){o||(o=n())}function i(r){o==null||o.success(r)}function t(r){o==null||o.error(r)}export{c as initToast,t as toastError,i as toastSuccess};

@@ -36,6 +36,7 @@ export interface User {
     photo: string;
     jabatan: string;
     status: Status;
+    badge_status: string;
 }
 
 export interface Status {

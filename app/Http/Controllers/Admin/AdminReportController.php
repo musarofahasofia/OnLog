@@ -53,9 +53,11 @@ class AdminReportController extends Controller
             $dailyAttendance = ($attendances[$dateKey] ?? collect())
                 ->map(function ($item) {
                     $item->badge_status = 'masuk';
-                    if ($item->status == 'late') {$item->badge_status = 'terlambat';}
+                    $item->description = 'Hadir';
+                    if ($item->status == 'late') {$item->badge_status = 'terlambat'; }
                     if ($item->overtime) {$item->badge_status = 'lembur';}
                     if ($item->status == 'late' && $item->overtime) {$item->badge_status = 'terlambat_lembur';}
+
                     return $item;
                 });
 
@@ -84,6 +86,7 @@ class AdminReportController extends Controller
                 return (object) [
                     'user'         => $user,
                     'badge_status' => 'none',
+                    'description' => 'Tanpa keterangan'
                 ];
             });
 

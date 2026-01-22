@@ -28,19 +28,28 @@ class AdminEmployeeController extends Controller
      */
     public function create(Request $request)
     {
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'user',
-            'jabatan'  => $request->jabatan,
-        ]);
+        $user = User::updateOrCreate(
+            ['id' => $request->id], // 🔑 kunci pencarian
+            [
+                'name'    => $request->name,
+                'email'   => $request->email,
+                'jabatan' => $request->jabatan,
+                'role'    => 'user',
 
-        $status = UserStatus::updateOrCreate([
-            'user_id' => $user->id,
-        ], [
-            'status' => 'new',
-        ]);
+                // password hanya di-set kalau ada
+                 ...($request->filled('password') ? [
+                    'password' => Hash::make($request->password),
+                ] : []),
+            ]
+        );
+
+        if ($request->filled('password')) {
+            UserStatus::updateOrCreate([
+                'user_id' => $user->id,
+            ], [
+                'status' => 'new',
+            ]);
+        }
 
         if ($request->hasFile('photo')) {
             $photoPath = CloudinaryService::uploadImage(

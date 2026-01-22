@@ -29,7 +29,7 @@ const STATUS_MAP: Record<StatusKey, Badge[]> = {
 }
 
 // Global state agar bisa di-share antar komponen
-const status = ref<{ status: string } | null>(null)
+const status = ref<string | null>(null)
 
 export function useStatus() {
   const fetchStatus = async () => {
@@ -39,13 +39,13 @@ export function useStatus() {
 
   // 3. Fungsi Helper untuk mengambil style berdasarkan param
   // Kamu bisa panggil ini dari frontend langsung
-  const getBadgeStyles = (statusVal: string | undefined): Badge[] => {
+  const getBadgeStyles = (statusVal: string | null): Badge[] => {
     if (!statusVal) return []
     return STATUS_MAP[statusVal as StatusKey] || []
   }
 
   // 4. Computed badges sekarang tinggal memanggil helper di atas
-  const badges = computed(() => getBadgeStyles(status.value?.status))
+  const badges = computed(() => getBadgeStyles(status.value))
 
   return {
     status,

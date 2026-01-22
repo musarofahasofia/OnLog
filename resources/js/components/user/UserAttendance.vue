@@ -14,7 +14,7 @@ onMounted(fetchHistory)
 </script>
 <template>
     <div class="flex justify-between">
-        <p class="text-lg font-extrabold">Calendar</p>
+        <p class="text-lg font-extrabold">Riwayat Pengguna</p>
     </div>
     <simplebar data-simplebar-auto-hide="true" class="flex overflow-y-auto min-h pr-1 mb-3">
         <div class="flex flex-col gap-6">

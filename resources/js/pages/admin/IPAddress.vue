@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminAppLayout from '@/layouts/AdminAppLayout.vue'
 import modalCreate from '@/components/admin/ip/Create.vue'
-import { router } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import { type BreadcrumbItem } from '@/types'
 

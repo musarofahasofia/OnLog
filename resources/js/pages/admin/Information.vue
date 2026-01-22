@@ -2,7 +2,7 @@
 import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import TableInformation from '@/components/admin/information/TableInformation.vue';
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 
 const { information } = defineProps<{
   information: any

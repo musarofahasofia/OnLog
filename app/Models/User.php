@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -49,10 +48,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
-
 
     public function status()
     {
@@ -67,5 +65,71 @@ class User extends Authenticatable
     public function attendance_history()
     {
         return $this->hasMany(AttendanceHistory::class);
+    }
+
+    public function requestPermissions()
+    {
+        return $this->hasMany(RequestPermission::class);
+    }
+
+    public function requestDuties()
+    {
+        return $this->hasMany(RequestDuty::class);
+    }
+
+    public function badgeStatusAt(Carbon | string $date): string
+    {
+        $date = $date ? Carbon::parse($date) : now();
+
+        // 1. Attendance (prioritas tertinggi)
+        $attendance = $this->attendance()
+            ->whereDate('created_at', $date)
+            ->first();
+
+        if ($attendance) {
+            if ($attendance->status === 'late' && $attendance->overtime) {
+                return 'terlambat_lembur';
+            }
+
+            if ($attendance->overtime) {
+                return 'lembur';
+            }
+
+            if ($attendance->status === 'late') {
+                return 'terlambat';
+            }
+
+            return 'masuk';
+        }
+
+        // 2. Permission
+        $permission = $this->requestPermissions()
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
+
+        if ($permission) {
+            return 'izin';
+        }
+
+        // 3. Duty
+        $duty = $this->requestDuties()
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
+
+        if ($duty) {
+            return 'dinas_luar';
+        }
+
+        // 4. Default
+        return 'none';
+    }
+
+    protected $appends = ['badge_status'];
+
+    public function getBadgeStatusAttribute()
+    {
+        return $this->badgeStatusAt(today());
     }
 }

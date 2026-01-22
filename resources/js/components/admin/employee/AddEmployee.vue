@@ -4,41 +4,66 @@ import { Label } from '@/components/ui/label'
 import { reactive, watch, shallowRef } from 'vue'
 import Input from '@/components/ui/input/Input.vue'
 import { useForm, useField } from 'vee-validate'
-import { z } from 'zod'
+import { any, z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm as useAPI, usePage } from '@inertiajs/vue3'
+import { User } from '@/types'
 
+const props = defineProps<{
+    user: User | null | undefined,
+    is_edit: boolean
+}>()
 
 const page = usePage()
 const emit = defineEmits(['close', 'refresh', 'toast'])
 
-const schema = toTypedSchema(
-    z.object({
-        name: z.string().min(1, 'Nama wajib diisi'),
-        jabatan: z.string().min(1, 'Jabatan wajib diisi'),
-        email: z.string().email('Email tidak valid'),
-        password: z.string().min(8, 'Minimal 8 karakter'),
-        photo: z
-            .instanceof(File, { message: 'Foto wajib diupload' })
-            .refine(
-                (file) => ['image/jpeg', 'image/png'].includes(file.type),
-                'Harus JPG / PNG'
-            )
-            .refine(
-                (file) => file.size <= 2 * 1024 * 1024,
-                'Maksimal 2MB'
-            )
-    })
-)
+function getSchema(isEdit: boolean) {
+    return toTypedSchema(
+        z.object({
+            id: z.any().optional(),
+            name: z.string().min(1, 'Nama wajib diisi'),
+            jabatan: z.string().min(1, 'Jabatan wajib diisi'),
+            email: z.string().email('Email tidak valid'),
+
+            password: isEdit
+                ? z.string().optional()
+                : z.string().min(8, 'Minimal 8 karakter'),
+
+            photo: isEdit
+                ? z
+                    .instanceof(File)
+                    .optional()
+                    .refine(
+                        (file) =>
+                            !file || ['image/jpeg', 'image/png'].includes(file.type),
+                        'Harus JPG / PNG'
+                    )
+                    .refine(
+                        (file) => !file || file.size <= 2 * 1024 * 1024,
+                        'Maksimal 2MB'
+                    )
+                : z
+                    .instanceof(File, { message: 'Foto wajib diupload' })
+                    .refine(
+                        (file) => ['image/jpeg', 'image/png'].includes(file.type),
+                        'Harus JPG / PNG'
+                    )
+                    .refine(
+                        (file) => file.size <= 2 * 1024 * 1024,
+                        'Maksimal 2MB'
+                    )
+        })
+    )
+}
 
 // 2️⃣ Init form
 const { handleSubmit } = useForm({
-    validationSchema: schema,
+    validationSchema: getSchema(props.is_edit),
     initialValues: {
-        name: '',
-        email: '',
+        name: props.user?.name ?? '',
+        email: props.user?.email ?? '',
         password: '',
-        jabatan: ''
+        jabatan: props.user?.jabatan ?? ''
     }
 })
 
@@ -51,6 +76,7 @@ const { value: photo, errorMessage: photoError } = useField<File>('photo')
 
 // 4️⃣ Submit
 const form = useAPI({
+    id: '',
     name: '',
     jabatan: '',
     email: '',
@@ -59,6 +85,9 @@ const form = useAPI({
 })
 
 const onSubmit = handleSubmit((values) => {
+    if (props.user?.id) {
+        values.id = props.user.id
+    }
     Object.assign(form, values)
 
     form.post(route('admin.employee.create'), {
@@ -69,7 +98,7 @@ const onSubmit = handleSubmit((values) => {
 
             emit('refresh')
             emit('close')
-            emit('toast', 'success', 'Berhasil menambahkan karyawan')
+            emit('toast', 'success', `Berhasil ${props.is_edit ? 'edit' : 'tambah'} karyawan`)
         },
         onError: (errors) => {
             console.log('Ada error validasi ❌', errors)
@@ -157,7 +186,8 @@ const onGeneratePassword = () => {
             <Button type="button" @click="emit('close')"
                 class="bg-background hover:bg-muted text-foreground cursor-pointer">Batal</Button>
             <Button :loading="form.processing" type="submit" variant="outline"
-                class="bg-abyss cursor-pointer font-bold text-white">Tambah Karyawan</Button>
+                class="bg-abyss cursor-pointer font-bold text-white">{{ props.is_edit ? 'Edit' : 'Tambah' }}
+                Karyawan</Button>
         </div>
     </form>
 </template>

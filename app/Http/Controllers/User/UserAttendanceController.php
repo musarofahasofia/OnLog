@@ -46,7 +46,7 @@ class UserAttendanceController extends Controller
             $currentTime = Carbon::now();
             $status      = $currentTime->gt(Carbon::createFromTime(8, 30, 0)) ? 'late' : 'on_time';
 
-            $ket   = $status == 'late' ? 'Terlambat, a' : 'A';
+            $ket   = $status == 'late' ? 'Terlambat, A' : 'A';
             $where = [
                 'date'    => Carbon::today()->toDateString(),
                 'user_id' => $user_id,

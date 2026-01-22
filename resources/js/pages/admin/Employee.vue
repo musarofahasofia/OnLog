@@ -2,7 +2,7 @@
 import AdminAppLayout from '@/layouts/AdminAppLayout.vue';
 import { User, type BreadcrumbItem } from '@/types';
 import TableEmployee from '@/components/admin/employee/TableEmployee.vue';
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 
 const { user } = defineProps<{
   user: User[]

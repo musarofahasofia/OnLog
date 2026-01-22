@@ -256,7 +256,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <CardHeader class="mt-1.5 px-3 md:px-6">
                                     <CardTitle>
                                         <div class="flex justify-between items-center">
-                                            <p>Statistic</p>
+                                            <p>Statistik</p>
                                             <p class="font-normal text-muted-foreground text-sm px-2 rounded">
                                                 Januari 2026
                                             </p>
